@@ -1,10 +1,21 @@
-import { Component, computed, effect, signal } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ViewEncapsulation,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-
+import {
+  MatCalendarCellClassFunction,
+  MatDatepickerModule,
+} from '@angular/material/datepicker';
 import { MatLuxonDateModule } from '@angular/material-luxon-adapter';
+
+import { DateTime } from 'luxon';
+
+import { PocketBaseService } from './pocket-base.service';
 
 @Component({
   selector: 'app-root',
@@ -16,30 +27,89 @@ import { MatLuxonDateModule } from '@angular/material-luxon-adapter';
     MatDatepickerModule,
     MatLuxonDateModule,
   ],
+  encapsulation: ViewEncapsulation.None,
   template: `
     <mat-toolbar color="primary">
       <span>WL</span>
     </mat-toolbar>
 
-    <!-- <input matInput [matDatepicker]="picker" />
-    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle> -->
-    <!-- <mat-datepicker #picker="matCalendar"></mat-datepicker> -->
     <div style="width: 500px">
-      <mat-calendar />
+      <mat-calendar
+        *ngIf="showCalendar"
+        [dateClass]="dateClass"
+        (selectedChange)="dateSelected($event)"
+      />
     </div>
 
-    <button (click)="test.set('hello')">Change</button>
-    {{ test() }} {{ test2() }}
     <router-outlet></router-outlet>
   `,
-  styles: [],
+  styles: [
+    `
+      button.mark-date {
+        background: orange;
+        border-radius: 100%;
+      }
+    `,
+  ],
 })
 export class AppComponent {
-  title = 'weightlifting';
+  pbService = inject(PocketBaseService);
+  cdr = inject(ChangeDetectorRef);
 
-  test = signal('hi');
-  test2 = computed(() => this.test() + 'there');
-  test3 = effect(() => {
-    console.log('effect', this.test());
-  });
+  showCalendar = false;
+
+  sessions: any; // TODO
+
+  /**
+   * Function used to calculate which date to add a css class to
+   * @returns a function which returns the css class to be added to that date
+   */
+  dateClass: MatCalendarCellClassFunction<DateTime> = () => '';
+
+  async ngOnInit() {
+    this.sessions = await this.pbService.getSessionsForUser('xr5783tntg32cuw');
+    this.dateClass = this._highlightSessionOnCalendar(this.sessions);
+    this.showCalendar = true;
+  }
+
+  async dateSelected(date: DateTime | null) {
+    if (date === null) {
+      return;
+    }
+    const sessionIdSelected: string | null = this._mapDateToSessionId(date);
+    if (sessionIdSelected) {
+      const session = await this.pbService.getSession(sessionIdSelected);
+      console.log(session)
+    } else {
+      console.log('open empty session for the input date');
+    }
+  }
+
+  private _highlightSessionOnCalendar(
+    sessions: any
+  ): MatCalendarCellClassFunction<DateTime> {
+    const allSessionDates: DateTime[] = sessions.items.map((session: any) => {
+      return DateTime.fromSQL(session.date).startOf('day');
+    });
+
+    return (cellDate: DateTime, view: 'month' | 'year' | 'multi-year') => {
+      if (view === 'month') {
+        const matchingDate = allSessionDates.find((date) => {
+          return cellDate.equals(date);
+        });
+        if (matchingDate) {
+          return 'mark-date';
+        }
+      }
+      return '';
+    };
+  }
+
+  private _mapDateToSessionId(date: DateTime) {
+    const matchedSession = this.sessions.items.find((session: any) => {
+      const sessionDate = DateTime.fromSQL(session.date).startOf('day');
+      return sessionDate.equals(date) ? true : false;
+    });
+    return matchedSession ? matchedSession.id : null;
+  }
 }
