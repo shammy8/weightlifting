@@ -1,0 +1,31 @@
+migrate((db) => {
+  const dao = new Dao(db)
+  const collection = dao.findCollectionByNameOrId("rapjjgrg42mkwpg")
+
+  // add
+  collection.schema.addField(new SchemaField({
+    "system": false,
+    "id": "wo1odlf5",
+    "name": "user_id",
+    "type": "relation",
+    "required": false,
+    "unique": false,
+    "options": {
+      "collectionId": "_pb_users_auth_",
+      "cascadeDelete": false,
+      "minSelect": null,
+      "maxSelect": 1,
+      "displayFields": []
+    }
+  }))
+
+  return dao.saveCollection(collection)
+}, (db) => {
+  const dao = new Dao(db)
+  const collection = dao.findCollectionByNameOrId("rapjjgrg42mkwpg")
+
+  // remove
+  collection.schema.removeField("wo1odlf5")
+
+  return dao.saveCollection(collection)
+})
