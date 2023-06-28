@@ -36,11 +36,17 @@ import { PocketBaseService } from './pocket-base.service';
 
     <div style="width: 500px">
       <mat-calendar
-        *ngIf="showCalendar()"
+        *ngIf="showCalendar() else disabledCalendar"
         [dateClass]="dateClass"
         (selectedChange)="dateSelected($event)"
       />
     </div>
+
+    <ng-template #disabledCalendar>
+      <mat-calendar
+      [dateFilter]="disableAllDateFn"
+      />
+    </ng-template>
 
     <router-outlet></router-outlet>
   `,
@@ -66,6 +72,8 @@ export class AppComponent {
    * @returns a function which returns the css class to be added to that date
    */
   dateClass: MatCalendarCellClassFunction<DateTime> = () => '';
+
+  disableAllDateFn = () => false
 
   async ngOnInit() {
     this.sessions = await this.pbService.getSessionsForUser('xr5783tntg32cuw');
