@@ -3,6 +3,7 @@ import {
   Component,
   ViewEncapsulation,
   inject,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
@@ -35,7 +36,7 @@ import { PocketBaseService } from './pocket-base.service';
 
     <div style="width: 500px">
       <mat-calendar
-        *ngIf="showCalendar"
+        *ngIf="showCalendar()"
         [dateClass]="dateClass"
         (selectedChange)="dateSelected($event)"
       />
@@ -56,7 +57,7 @@ export class AppComponent {
   pbService = inject(PocketBaseService);
   cdr = inject(ChangeDetectorRef);
 
-  showCalendar = false;
+  showCalendar = signal(false);
 
   sessions: any; // TODO
 
@@ -69,7 +70,7 @@ export class AppComponent {
   async ngOnInit() {
     this.sessions = await this.pbService.getSessionsForUser('xr5783tntg32cuw');
     this.dateClass = this._highlightSessionOnCalendar(this.sessions);
-    this.showCalendar = true;
+    this.showCalendar.set(true)
   }
 
   async dateSelected(date: DateTime | null) {
