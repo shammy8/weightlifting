@@ -8,8 +8,10 @@ import {
 import { MatLuxonDateModule } from '@angular/material-luxon-adapter';
 
 import { DateTime } from 'luxon';
+import { ListResult } from 'pocketbase';
 
 import { PocketBaseService } from '../pocket-base.service';
+import { Session } from '../models/models';
 
 @Component({
   selector: 'app-session-select-calendar',
@@ -43,7 +45,7 @@ export class SessionSelectCalendarComponent {
 
   showCalendar = signal(false);
 
-  sessions: any; // TODO
+  sessions: ListResult<Session> | null = null; // TODO
 
   /**
    * Function used to calculate which date to add a css class to
@@ -55,6 +57,7 @@ export class SessionSelectCalendarComponent {
 
   async ngOnInit() {
     this.sessions = await this.pbService.getSessionsForUser('xr5783tntg32cuw');
+    console.log('SESSIONS', this.sessions);
     this.dateClassFn = this._highlightSessionOnCalendar(this.sessions);
     this.showCalendar.set(true);
   }
@@ -73,9 +76,9 @@ export class SessionSelectCalendarComponent {
   }
 
   private _highlightSessionOnCalendar(
-    sessions: any
+    sessions: ListResult<Session>
   ): MatCalendarCellClassFunction<DateTime> {
-    const allSessionDates: DateTime[] = sessions.items.map((session: any) => {
+    const allSessionDates: DateTime[] = sessions.items.map((session) => {
       return DateTime.fromSQL(session.date).startOf('day');
     });
 
@@ -93,7 +96,7 @@ export class SessionSelectCalendarComponent {
   }
 
   private _mapDateToSessionId(date: DateTime) {
-    const matchedSession = this.sessions.items.find((session: any) => {
+    const matchedSession = this.sessions?.items.find((session) => {
       const sessionDate = DateTime.fromSQL(session.date).startOf('day');
       return sessionDate.equals(date) ? true : false;
     });
