@@ -1,13 +1,13 @@
 export interface Session<T = {}> extends PocketBaseRecord<T> {
   date: string;
   notes: string;
-  user_id: string;
+  userId: string;
 }
 
 export interface GroupOfSet<T = {}> extends PocketBaseRecord<T> {
-  exercise_id: string;
+  exerciseId: string;
   order: number;
-  session_id: string;
+  sessionId: string;
   sets: Set[];
 }
 
@@ -22,7 +22,7 @@ export interface Set {
  * TODO delete this and delete table on pocket base too
  */
 export interface SetCollection<T = {}> extends PocketBaseRecord<T> {
-  group_of_sets_id: string;
+  groupOfSetsId: string;
   order: number;
   reps: number;
   time: number;
@@ -32,7 +32,7 @@ export interface SetCollection<T = {}> extends PocketBaseRecord<T> {
 export interface Exercise<T = {}> extends PocketBaseRecord<T> {
   name: string;
   type: ExerciseType;
-  user_id: string;
+  userId: string;
 }
 
 // TODO is this better as enum and a Map
