@@ -8,9 +8,20 @@ export interface GroupOfSet<T = {}> extends PocketBaseRecord<T> {
   exercise_id: string;
   order: number;
   session_id: string;
+  sets: Set[];
 }
 
-export interface Set<T = {}> extends PocketBaseRecord<T> {
+export interface Set {
+  reps: number | null;
+  time: number | null;
+  weight: number | null;
+  distance: number | null;
+}
+
+/**
+ * TODO delete this and delete table on pocket base too
+ */
+export interface SetCollection<T = {}> extends PocketBaseRecord<T> {
   group_of_sets_id: string;
   order: number;
   reps: number;
