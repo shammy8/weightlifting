@@ -1,3 +1,15 @@
+/**
+ * TODO not used yet
+ */
+export interface User<T = {}> extends PocketBaseRecord<T> {
+  avatar: string;
+  email: string;
+  emailVisibility: boolean;
+  name: string;
+  username: string;
+  verified: boolean;
+}
+
 export interface Session<T = {}> extends PocketBaseRecord<T> {
   date: string;
   notes: string;
