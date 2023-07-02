@@ -13,6 +13,7 @@ import { ListResult } from 'pocketbase';
 import { PocketBaseService } from '../pocket-base.service';
 import { Session } from '../models/models';
 import { Router, RouterOutlet } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-session-select-calendar',
@@ -51,8 +52,9 @@ import { Router, RouterOutlet } from '@angular/router';
   ],
 })
 export class SessionSelectCalendarComponent {
-  pbService = inject(PocketBaseService);
   router = inject(Router);
+  pbService = inject(PocketBaseService);
+  autService = inject(AuthService);
 
   showCalendar = signal(false);
 
@@ -67,8 +69,9 @@ export class SessionSelectCalendarComponent {
   disableAllDateFn = () => false;
 
   async ngOnInit() {
-    this.sessions = await this.pbService.getSessionsForUser('xr5783tntg32cuw');
-    console.log('SESSIONS', this.sessions);
+    this.sessions = await this.pbService.getSessionsForUser(
+      this.autService.userRecord()!.id
+    ); // userRecord() should always be non-null because we require the user to log in before we can use this component
     this.dateClassFn = this._highlightSessionOnCalendar(this.sessions);
     this.showCalendar.set(true);
   }
