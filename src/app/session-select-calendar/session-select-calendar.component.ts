@@ -12,27 +12,37 @@ import { ListResult } from 'pocketbase';
 
 import { PocketBaseService } from '../pocket-base.service';
 import { Session } from '../models/models';
+import { Router, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-session-select-calendar',
   standalone: true,
-  imports: [CommonModule, MatDatepickerModule, MatLuxonDateModule],
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    MatDatepickerModule,
+    MatLuxonDateModule,
+  ],
   encapsulation: ViewEncapsulation.None,
   template: `
-    <div style="width: 500px">
-      <mat-calendar
-        *ngIf="showCalendar(); else disabledCalendar"
-        [dateClass]="dateClassFn"
-        (selectedChange)="dateSelected($event)"
-      />
-    </div>
+    <mat-calendar
+      *ngIf="showCalendar(); else disabledCalendar"
+      [dateClass]="dateClassFn"
+      (selectedChange)="dateSelected($event)"
+    />
 
     <ng-template #disabledCalendar>
       <mat-calendar [dateFilter]="disableAllDateFn" />
     </ng-template>
+
+    <router-outlet />
   `,
   styles: [
     `
+      mat-calendar {
+        min-width: 300px;
+        max-width: 500px;
+      }
       button.mark-date {
         background: orange;
         border-radius: 100%;
@@ -42,6 +52,7 @@ import { Session } from '../models/models';
 })
 export class SessionSelectCalendarComponent {
   pbService = inject(PocketBaseService);
+  router = inject(Router);
 
   showCalendar = signal(false);
 
@@ -68,8 +79,7 @@ export class SessionSelectCalendarComponent {
     }
     const sessionIdSelected: string | null = this._mapDateToSessionId(date);
     if (sessionIdSelected) {
-      const session = await this.pbService.getSession(sessionIdSelected);
-      console.log(session);
+      this.router.navigate(['session', sessionIdSelected], {});
     } else {
       console.log('open empty session for the input date');
     }

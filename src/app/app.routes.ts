@@ -4,6 +4,7 @@ import { CanActivateFn, Router, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { SessionSelectCalendarComponent } from './session-select-calendar/session-select-calendar.component';
 import { AuthService } from './services/auth.service';
+import { SessionComponent } from './session/session.component';
 
 const authGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
@@ -32,6 +33,13 @@ export const routes: Routes = [
     component: SessionSelectCalendarComponent,
     path: '',
     canActivate: [authGuard],
+    children: [
+      {
+        path: 'session/:sessionId',
+        component: SessionComponent,
+      },
+    ],
+    
   },
   {
     component: LoginComponent,

@@ -62,6 +62,15 @@ interface PocketBaseRecord<T = {}> {
   /**
    * SQL Date
    */
-  updated: number;
-  expand: T; // TODO
+  updated: string;
+  expand: T;
 }
+
+export const emptyPocketBaseRecord: PocketBaseRecord = {
+  collectionId: '',
+  collectionName: '',
+  created: '',
+  id: '',
+  updated: '',
+  expand: {},
+};

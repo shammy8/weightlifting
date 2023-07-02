@@ -20,16 +20,27 @@ export class PocketBaseService {
     });
   }
 
-  getSession(sessionId: string) {
+  getGroupOfSetsWithExerciseAndSession(sessionId: string) {
     return this.pb.collection('groupOfSets').getFullList<
       // GroupOfSet<{ exerciseId: Exercise; 'sets(groupsOfSetsId)': Set[] }>
-      GroupOfSet<{ exercise_id: Exercise }>
+      GroupOfSet<{ exerciseId: Exercise; sessionId: Session }>
     >({
       filter: `sessionId = "${sessionId}"`,
       sort: 'order',
       // expand: 'exerciseId,sets(groupOfSetsId)',
-      expand: 'exerciseId',
+      expand: 'exerciseId,sessionId',
       // changing fields/expand property means the GroupOfSets<...> interface will need to be changed too
+    });
+  }
+
+  getSessionsWithGroupOfSetsAndExercise(sessionId: string) {
+    return this.pb.collection('sessions').getOne<
+      Session<{
+        'groupOfSets(sessionId)': GroupOfSet<{ exerciseId: Exercise }>[];
+      }>
+    >(sessionId, {
+      expand: 'groupOfSets(sessionId).exerciseId',
+      // changing fields/expand property means the generic will need to be changed too
     });
   }
 }
