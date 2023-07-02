@@ -1,5 +1,13 @@
-import { Injectable, inject, signal } from '@angular/core';
+import {
+  Injectable,
+  WritableSignal,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { Router } from '@angular/router';
+
+import { Admin, Record } from 'pocketbase';
 
 import { PocketBaseService } from '../pocket-base.service';
 
@@ -10,12 +18,14 @@ export class AuthService {
   pbService = inject(PocketBaseService);
   router = inject(Router);
 
-  isLoggedIn = signal(false);
+  userRecord: WritableSignal<Record | Admin | null> = signal(null);
+  isLoggedIn = computed(() => !!this.userRecord());
 
   constructor() {
-    this.pbService.pb.authStore.onChange(() => {
-      this.isLoggedIn.set(!!this.pbService.pb.authStore.model);
-    }, true);
+    this.pbService.pb.authStore.onChange(
+      () => this.userRecord.set(this.pbService.pb.authStore.model),
+      true
+    );
   }
 
   async loginWithGoogle() {
