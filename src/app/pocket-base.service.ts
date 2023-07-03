@@ -22,12 +22,10 @@ export class PocketBaseService {
 
   getGroupOfSetsWithExerciseAndSession(sessionId: string) {
     return this.pb.collection('groupOfSets').getFullList<
-      // GroupOfSet<{ exerciseId: Exercise; 'sets(groupsOfSetsId)': Set[] }>
       GroupOfSet<{ exerciseId: Exercise; sessionId: Session }>
     >({
       filter: `sessionId = "${sessionId}"`,
       sort: 'order',
-      // expand: 'exerciseId,sets(groupOfSetsId)',
       expand: 'exerciseId,sessionId',
       // changing fields/expand property means the GroupOfSets<...> interface will need to be changed too
     });

@@ -58,7 +58,13 @@ export class SessionSelectCalendarComponent {
 
   showCalendar = signal(false);
 
-  sessions: ListResult<Session> | null = null; // TODO
+  sessions: ListResult<Session> = {
+    totalItems: 0,
+    totalPages: 0,
+    items: [],
+    page: 0,
+    perPage: 0,
+  };
 
   /**
    * Function used to calculate which date to add a css class to
@@ -84,7 +90,7 @@ export class SessionSelectCalendarComponent {
     if (sessionIdSelected) {
       this.router.navigate(['session', sessionIdSelected], {});
     } else {
-      console.log('open empty session for the input date');
+      console.log('open empty session for the input date', date.toISODate());
     }
   }
 
