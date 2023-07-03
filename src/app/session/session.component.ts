@@ -4,6 +4,7 @@ import { DatePipe, NgFor } from '@angular/common';
 import {
   MatBottomSheet,
   MatBottomSheetModule,
+  MatBottomSheetRef,
 } from '@angular/material/bottom-sheet';
 
 import { PocketBaseService } from '../pocket-base.service';
@@ -13,18 +14,17 @@ import {
   Session,
   emptyPocketBaseRecord,
 } from '../models/models';
-import { GroupOfSetComponent } from '../group-of-set/group-of-set.component';
+import {
+  GroupOfSetComponent,
+  GroupOfSetModalDismissData,
+} from '../group-of-set/group-of-set.component';
 import { ShortenSetsPipe } from '../pipes/shorten-sets.pipe';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-session',
   standalone: true,
-  imports: [
-    NgFor,
-    MatBottomSheetModule,
-    DatePipe,
-    ShortenSetsPipe,
-  ],
+  imports: [NgFor, MatBottomSheetModule, DatePipe, ShortenSetsPipe],
   template: `
     <p>{{ session.date | date }}</p>
     {{ session.notes }}
@@ -61,7 +61,25 @@ export class SessionComponent {
   }
 
   onOpenGroupOfSetModal(groupOfSet: GroupOfSet) {
-    console.log(groupOfSet);
-    this.bottomSheet.open(GroupOfSetComponent, { data: groupOfSet });
+    const bottom: MatBottomSheetRef<
+      GroupOfSetComponent,
+      GroupOfSetModalDismissData
+    > = this.bottomSheet.open(GroupOfSetComponent, {
+      data: groupOfSet,
+    });
+
+    bottom
+      .afterDismissed()
+      .pipe(take(1))
+      .subscribe((data) => {
+        if (data?.goToExerciseHistoryWithId) {
+          console.log(
+            'fetch exercises with id',
+            data.goToExerciseHistoryWithId
+          );
+        } else if (data?.newGroupOfSetData) {
+          console.log('update group of set with', data.newGroupOfSetData);
+        }
+      });
   }
 }
