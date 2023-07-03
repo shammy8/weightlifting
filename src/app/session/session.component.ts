@@ -1,6 +1,11 @@
 import { Component, Input, inject } from '@angular/core';
 import { DatePipe, NgFor } from '@angular/common';
 
+import {
+  MatBottomSheet,
+  MatBottomSheetModule,
+} from '@angular/material/bottom-sheet';
+
 import { PocketBaseService } from '../pocket-base.service';
 import {
   Exercise,
@@ -9,23 +14,34 @@ import {
   emptyPocketBaseRecord,
 } from '../models/models';
 import { GroupOfSetComponent } from '../group-of-set/group-of-set.component';
+import { ShortenSetsPipe } from '../pipes/shorten-sets.pipe';
 
 @Component({
   selector: 'app-session',
   standalone: true,
-  imports: [NgFor, GroupOfSetComponent, DatePipe],
+  imports: [
+    NgFor,
+    MatBottomSheetModule,
+    DatePipe,
+    ShortenSetsPipe,
+  ],
   template: `
     <p>{{ session.date | date }}</p>
     {{ session.notes }}
-    <ng-container
+
+    <p
       *ngFor="let groupOfSet of session.expand['groupOfSets(sessionId)']"
+      (click)="onOpenGroupOfSetModal(groupOfSet)"
     >
-      <app-group-of-set [groupOfSet]="groupOfSet" />
-    </ng-container>
+      {{ groupOfSet.expand.exerciseId.name }}
+      <br />
+      {{ groupOfSet.sets | shortenSets : groupOfSet.expand.exerciseId.type }}
+    </p>
   `,
   styles: [],
 })
 export class SessionComponent {
+  bottomSheet = inject(MatBottomSheet);
   pbService = inject(PocketBaseService);
 
   session: Session<{
@@ -42,5 +58,10 @@ export class SessionComponent {
     this.pbService.getSessionsWithGroupOfSetsAndExercise(id).then((session) => {
       this.session = session;
     });
+  }
+
+  onOpenGroupOfSetModal(groupOfSet: GroupOfSet) {
+    console.log(groupOfSet);
+    this.bottomSheet.open(GroupOfSetComponent, { data: groupOfSet });
   }
 }

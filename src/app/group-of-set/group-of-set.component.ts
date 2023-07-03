@@ -1,38 +1,27 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { NgFor } from '@angular/common';
+import { MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
 
-import { Exercise, GroupOfSet, emptyPocketBaseRecord } from '../models/models';
+import { Exercise, GroupOfSet } from '../models/models';
 import { SetComponent } from '../set/set.component';
-import { ShortenSetsPipe } from '../pipes/shorten-sets.pipe';
 
 @Component({
   selector: 'app-group-of-set',
   standalone: true,
-  imports: [SetComponent, ShortenSetsPipe],
+  imports: [NgFor, SetComponent],
   template: `
     <p>
       {{ groupOfSet.expand.exerciseId.name }}
-      <br />
-      {{ groupOfSet.sets | shortenSets : groupOfSet.expand.exerciseId.type }}
     </p>
-    <!-- <app-set *ngFor="let set of groupOfSet.sets" [set]="set" /> -->
+    <ng-container *ngFor="let set of groupOfSet.sets; let i = index">
+      {{ i + 1 }}
+      <app-set [set]="set" />
+    </ng-container>
   `,
   styles: [],
 })
 export class GroupOfSetComponent {
-  @Input({ required: true }) groupOfSet: GroupOfSet<{ exerciseId: Exercise }> =
-    {
-      ...emptyPocketBaseRecord,
-      exerciseId: '',
-      order: 0,
-      sessionId: '',
-      sets: [],
-      expand: {
-        exerciseId: {
-          ...emptyPocketBaseRecord,
-          name: '',
-          type: 'reps',
-          userId: '',
-        },
-      },
-    };
+  groupOfSet: GroupOfSet<{ exerciseId: Exercise }> = inject(
+    MAT_BOTTOM_SHEET_DATA
+  );
 }

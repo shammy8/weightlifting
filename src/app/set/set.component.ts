@@ -7,9 +7,10 @@ import { Set, emptyPocketBaseRecord } from '../models/models';
   selector: 'app-set',
   standalone: true,
   imports: [CommonModule],
-  template: `<p>
+  template: `
     Weight: {{ set.weight }}, Reps: {{ set.reps }}, Time: {{ set.time }}
-  </p>`,
+    <br />
+  `,
   styles: [],
 })
 export class SetComponent {
