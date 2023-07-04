@@ -1,13 +1,16 @@
-import { Component, Input, inject } from '@angular/core';
-import { NgFor } from '@angular/common';
-
 import {
-  MatBottomSheet,
-  MatBottomSheetModule,
-  MatBottomSheetRef,
-} from '@angular/material/bottom-sheet';
+  Component,
+  Input,
+  Signal,
+  WritableSignal,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { NgFor, NgIf } from '@angular/common';
 
-import { take } from 'rxjs';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+
 import { DateTime } from 'luxon';
 
 import { PocketBaseService } from '../pocket-base.service';
@@ -17,12 +20,10 @@ import {
   Session,
   emptyPocketBaseRecord,
 } from '../models/models';
-import {
-  GroupOfSetComponent,
-  GroupOfSetModalDismissData,
-} from '../group-of-set/group-of-set.component';
+import { GroupOfSetComponent } from '../group-of-set/group-of-set.component';
 import { ShortenSetsPipe } from '../pipes/shorten-sets.pipe';
 import { SessionSelectCalendarComponent } from '../session-select-calendar/session-select-calendar.component';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-session',
@@ -30,73 +31,87 @@ import { SessionSelectCalendarComponent } from '../session-select-calendar/sessi
   template: `
     <app-session-select-calendar
       type="datepicker"
-      [initialDate]="sessionDate"
+      [initialDate]="sessionDate()"
     />
 
-    {{ session.notes }}
+    {{ session().notes }}
 
     <p
-      *ngFor="let groupOfSet of session.expand['groupOfSets(sessionId)']"
-      (click)="onOpenGroupOfSetModal(groupOfSet)"
+      *ngFor="
+        let groupOfSet of session().expand['groupOfSets(sessionId)'];
+        let i = index
+      "
+      (click)="onOpenGroupOfSetModal(i)"
     >
       {{ groupOfSet.expand.exerciseId.name }}
       <br />
       {{ groupOfSet.sets | shortenSets : groupOfSet.expand.exerciseId.type }}
     </p>
+
+    <app-group-of-set
+      *ngIf="groupOfSetSelected()"
+      [groupOfSet]="groupOfSetSelected()!"
+    />
   `,
   styles: [],
   imports: [
     NgFor,
+    NgIf,
     MatBottomSheetModule,
     ShortenSetsPipe,
     SessionSelectCalendarComponent,
+    GroupOfSetComponent,
   ],
 })
 export class SessionComponent {
-  bottomSheet = inject(MatBottomSheet);
-  pbService = inject(PocketBaseService);
+  private readonly _pbService = inject(PocketBaseService);
+  private readonly _router = inject(Router);
+  private readonly _activatedRoute = inject(ActivatedRoute);
 
-  session: Session<{
-    'groupOfSets(sessionId)': GroupOfSet<{ exerciseId: Exercise }>[];
-  }> = {
+  session: WritableSignal<
+    Session<{
+      'groupOfSets(sessionId)': GroupOfSet<{ exerciseId: Exercise }>[];
+    }>
+  > = signal({
     ...emptyPocketBaseRecord,
     date: '',
     notes: '',
     userId: '',
     expand: { 'groupOfSets(sessionId)': [] },
-  };
-  sessionDate: DateTime | null = null;
+  });
+
+  sessionDate: Signal<DateTime | null> = computed(() =>
+    DateTime.fromSQL(this.session().date)
+  );
+
+  groupOfSetIndex: WritableSignal<number | null> = signal(null);
+
+  groupOfSetSelected = computed(() =>
+    typeof this.groupOfSetIndex() === 'number'
+      ? this.session().expand['groupOfSets(sessionId)'][this.groupOfSetIndex()!]
+      : null
+  );
 
   /**
-   * The sessionId param from the router
+   * The sessionIdParam param from the router
    */
-  @Input() set sessionId(id: string) {
-    this.pbService.getSessionsWithGroupOfSetsAndExercise(id).then((session) => {
-      this.session = session;
-      this.sessionDate = DateTime.fromSQL(this.session.date);
-    });
+  @Input() set sessionIdParam(id: string) {
+    this._pbService
+      .getSessionsWithGroupOfSetsAndExercise(id)
+      .then((session) => this.session.set(session));
   }
 
-  onOpenGroupOfSetModal(groupOfSet: GroupOfSet) {
-    const bottom: MatBottomSheetRef<
-      GroupOfSetComponent,
-      GroupOfSetModalDismissData
-    > = this.bottomSheet.open(GroupOfSetComponent, {
-      data: groupOfSet,
-    });
+  /**
+   * The groupOfSetIndexParam query param from the router
+   */
+  @Input() set groupOfSetIndexParam(id: string) {
+    this.groupOfSetIndex.set(+id);
+  }
 
-    bottom
-      .afterDismissed()
-      .pipe(take(1))
-      .subscribe((data) => {
-        if (data?.goToExerciseHistoryWithId) {
-          console.log(
-            'fetch exercises with id',
-            data.goToExerciseHistoryWithId
-          );
-        } else if (data?.newGroupOfSetData) {
-          console.log('update group of set with', data.newGroupOfSetData);
-        }
-      });
+  onOpenGroupOfSetModal(groupOfSetIndex: number) {
+    this._router.navigate([], {
+      relativeTo: this._activatedRoute,
+      queryParams: { groupOfSetIndexParam: groupOfSetIndex  },
+    });
   }
 }

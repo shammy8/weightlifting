@@ -1,22 +1,21 @@
-import { Component, inject } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { NgFor } from '@angular/common';
-import {
-  MAT_BOTTOM_SHEET_DATA,
-  MatBottomSheetRef,
-} from '@angular/material/bottom-sheet';
+import { Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
 
-import { Exercise, GroupOfSet } from '../models/models';
+import { Exercise, GroupOfSet, emptyPocketBaseRecord } from '../models/models';
 import { SetComponent } from '../set/set.component';
 
 @Component({
   selector: 'app-group-of-set',
   standalone: true,
-  imports: [NgFor, SetComponent],
+  imports: [NgFor, MatButtonModule, SetComponent],
   template: `
+    <hr />
     <p>
       {{ groupOfSet.expand.exerciseId.name }}
     </p>
-    <button (click)="goToExerciseHistory()">History</button>
+    <button mat-button (click)="goToExerciseHistory()">History</button>
     <br />
     <ng-container *ngFor="let set of groupOfSet.sets; let i = index">
       {{ i + 1 }}
@@ -26,20 +25,28 @@ import { SetComponent } from '../set/set.component';
   styles: [],
 })
 export class GroupOfSetComponent {
-  private readonly _matBottomSheetRef: MatBottomSheetRef<
-    GroupOfSetComponent,
-    GroupOfSetModalDismissData
-  > = inject(MatBottomSheetRef);
-  groupOfSet: GroupOfSet<{ exerciseId: Exercise }> = inject(
-    MAT_BOTTOM_SHEET_DATA
-  );
+  @Input({ required: true }) groupOfSet: GroupOfSet<{ exerciseId: Exercise }> =
+    {
+      ...emptyPocketBaseRecord,
+      order: 0,
+      exerciseId: '',
+      sessionId: '',
+      sets: [],
+      expand: {
+        exerciseId: {
+          ...emptyPocketBaseRecord,
+          name: '',
+          type: 'reps',
+          userId: '',
+        },
+      },
+    };
+
+  private readonly _router = inject(Router);
 
   goToExerciseHistory() {
-    this._matBottomSheetRef.dismiss({ goToExerciseHistoryWithId: this.groupOfSet.exerciseId });
+    this._router.navigate(['exercise-history', this.groupOfSet.exerciseId], {
+      queryParamsHandling: 'merge',
+    });
   }
-}
-
-export interface GroupOfSetModalDismissData {
-  goToExerciseHistoryWithId?: string;
-  newGroupOfSetData?: GroupOfSet;
 }

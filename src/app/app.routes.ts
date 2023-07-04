@@ -37,7 +37,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
-    path: 'session/:sessionId',
+    path: 'session/:sessionIdParam',
     component: SessionComponent,
     canActivate: [authGuard],
   },
