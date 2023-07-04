@@ -1,11 +1,14 @@
 import { Component, Input, inject } from '@angular/core';
-import { DatePipe, NgFor } from '@angular/common';
+import { NgFor } from '@angular/common';
 
 import {
   MatBottomSheet,
   MatBottomSheetModule,
   MatBottomSheetRef,
 } from '@angular/material/bottom-sheet';
+
+import { take } from 'rxjs';
+import { DateTime } from 'luxon';
 
 import { PocketBaseService } from '../pocket-base.service';
 import {
@@ -19,14 +22,17 @@ import {
   GroupOfSetModalDismissData,
 } from '../group-of-set/group-of-set.component';
 import { ShortenSetsPipe } from '../pipes/shorten-sets.pipe';
-import { take } from 'rxjs';
+import { SessionSelectCalendarComponent } from '../session-select-calendar/session-select-calendar.component';
 
 @Component({
   selector: 'app-session',
   standalone: true,
-  imports: [NgFor, MatBottomSheetModule, DatePipe, ShortenSetsPipe],
   template: `
-    <p>{{ session.date | date }}</p>
+    <app-session-select-calendar
+      type="datepicker"
+      [initialDate]="sessionDate"
+    />
+
     {{ session.notes }}
 
     <p
@@ -39,6 +45,12 @@ import { take } from 'rxjs';
     </p>
   `,
   styles: [],
+  imports: [
+    NgFor,
+    MatBottomSheetModule,
+    ShortenSetsPipe,
+    SessionSelectCalendarComponent,
+  ],
 })
 export class SessionComponent {
   bottomSheet = inject(MatBottomSheet);
@@ -53,10 +65,15 @@ export class SessionComponent {
     userId: '',
     expand: { 'groupOfSets(sessionId)': [] },
   };
+  sessionDate: DateTime | null = null;
 
+  /**
+   * The sessionId param from the router
+   */
   @Input() set sessionId(id: string) {
     this.pbService.getSessionsWithGroupOfSetsAndExercise(id).then((session) => {
       this.session = session;
+      this.sessionDate = DateTime.fromSQL(this.session.date);
     });
   }
 
