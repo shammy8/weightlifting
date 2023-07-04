@@ -76,9 +76,9 @@ import { AuthService } from '../services/auth.service';
       mat-form-field {
         width: 100%;
       }
-      /* TODO change to a dot and don't show when date is selected */
-      button.mark-date {
-        background: orange;
+      /* TODO change to a dot maybe */
+      button.mark-date:not(.mat-calendar-body-active) {
+        border: 1px blue solid;
         border-radius: 100%;
       }
     `,
