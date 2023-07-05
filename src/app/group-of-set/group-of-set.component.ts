@@ -1,28 +1,116 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NgFor } from '@angular/common';
-import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
+
 import { MatButtonModule } from '@angular/material/button';
+import { MatListModule } from '@angular/material/list';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
 
 import { Exercise, GroupOfSet, emptyPocketBaseRecord } from '../models/models';
 import { SetComponent } from '../set/set.component';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
+// TODO clean up file
 @Component({
   selector: 'app-group-of-set',
   standalone: true,
-  imports: [NgFor, MatButtonModule, SetComponent],
+  imports: [
+    NgFor,
+    RouterLink,
+    MatIconModule,
+    MatButtonModule,
+    MatGridListModule,
+    MatListModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatCardModule,
+    SetComponent,
+  ],
   template: `
-    <hr />
-    <p>
+    <!-- <p>
       {{ groupOfSet.expand.exerciseId.name }}
-    </p>
-    <button mat-button (click)="goToExerciseHistory()">History</button>
-    <br />
-    <ng-container *ngFor="let set of groupOfSet.sets; let i = index">
-      {{ i + 1 }}
-      <app-set [set]="set" />
-    </ng-container>
+    </p> -->
+
+    <mat-card>
+      <mat-list>
+        <mat-list-item class="tall">
+          <mat-grid-list cols="9" rowHeight="78px">
+            <mat-grid-tile colspan="2">
+              <button mat-icon-button>
+                <mat-icon>add_one</mat-icon>
+              </button>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="5">
+              <a
+                extended
+                mat-fab
+                [routerLink]="['/exercise-history', groupOfSet.exerciseId]"
+                queryParamsHandling="merge"
+                >History<mat-icon> history </mat-icon></a
+              >
+            </mat-grid-tile>
+            <mat-grid-tile colspan="2">
+              <button mat-icon-button>
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-grid-tile>
+          </mat-grid-list>
+        </mat-list-item>
+
+        <mat-list-item>
+          <mat-grid-list cols="3" rowHeight="48px">
+            <mat-grid-tile>Set </mat-grid-tile>
+            <mat-grid-tile>Weight</mat-grid-tile>
+            <mat-grid-tile>Reps</mat-grid-tile>
+          </mat-grid-list>
+        </mat-list-item>
+
+        <mat-list-item
+          *ngFor="let set of groupOfSet.sets; let i = index"
+          class="tall"
+        >
+          <mat-grid-list cols="3" rowHeight="78px">
+            <mat-grid-tile> {{ 1 + i }}</mat-grid-tile>
+            <mat-grid-tile>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <input matInput max="9999" [value]="set.weight" />
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <input
+                  matInput
+                  max="999"
+                  min="0"
+                  [value]="set.reps"
+                /> </mat-form-field
+            ></mat-grid-tile>
+          </mat-grid-list>
+        </mat-list-item>
+      </mat-list>
+    </mat-card>
   `,
-  styles: [],
+  styles: [
+    `
+      mat-card {
+        margin-left: 10px;
+        margin-right: 10px;
+      }
+      .tall.mdc-list-item.mdc-list-item--with-one-line {
+        /* height of mat-list-item */
+        height: 80px;
+      }
+      mat-form-field {
+        width: 70px;
+        input {
+          text-align: center;
+        }
+      }
+    `,
+  ],
 })
 export class GroupOfSetComponent {
   @Input({ required: true }) groupOfSet: GroupOfSet<{ exerciseId: Exercise }> =
@@ -41,12 +129,4 @@ export class GroupOfSetComponent {
         },
       },
     };
-
-  private readonly _router = inject(Router);
-
-  goToExerciseHistory() {
-    this._router.navigate(['exercise-history', this.groupOfSet.exerciseId], {
-      queryParamsHandling: 'merge',
-    });
-  }
 }

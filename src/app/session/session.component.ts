@@ -14,7 +14,9 @@ import {
   NgSwitchCase,
   NgSwitchDefault,
 } from '@angular/common';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
+import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 
 import { DateTime } from 'luxon';
@@ -29,8 +31,6 @@ import {
 import { GroupOfSetComponent } from '../group-of-set/group-of-set.component';
 import { ShortenSetsPipe } from '../pipes/shorten-sets.pipe';
 import { SessionSelectCalendarComponent } from '../session-select-calendar/session-select-calendar.component';
-import { RouterLink, RouterLinkActive } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-session',
