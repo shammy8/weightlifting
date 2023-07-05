@@ -7,9 +7,15 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { NgFor, NgIf } from '@angular/common';
+import {
+  NgFor,
+  NgIf,
+  NgSwitch,
+  NgSwitchCase,
+  NgSwitchDefault,
+} from '@angular/common';
 
-import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { MatListModule } from '@angular/material/list';
 
 import { DateTime } from 'luxon';
 
@@ -23,7 +29,8 @@ import {
 import { GroupOfSetComponent } from '../group-of-set/group-of-set.component';
 import { ShortenSetsPipe } from '../pipes/shorten-sets.pipe';
 import { SessionSelectCalendarComponent } from '../session-select-calendar/session-select-calendar.component';
-import { ActivatedRoute, Router } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-session',
@@ -34,30 +41,80 @@ import { ActivatedRoute, Router } from '@angular/router';
       [initialDate]="sessionDate()"
     />
 
-    {{ session().notes }}
+    <div class="session">
+      <!-- PB returns notes wrapped in <p> since it is a rich editor field -->
+      <!-- TODO should I change this? -->
+      <p *ngIf="session().notes as notes" [innerHTML]="notes" class="notes"></p>
 
-    <p
-      *ngFor="
-        let groupOfSet of session().expand['groupOfSets(sessionId)'];
-        let i = index
-      "
-      (click)="onOpenGroupOfSetModal(i)"
-    >
-      {{ groupOfSet.expand.exerciseId.name }}
-      <br />
-      {{ groupOfSet.sets | shortenSets : groupOfSet.expand.exerciseId.type }}
-    </p>
+      <mat-nav-list>
+        <a
+          mat-list-item
+          *ngFor="
+            let groupOfSet of session().expand['groupOfSets(sessionId)'];
+            let i = index
+          "
+          routerLinkActive
+          #routerLinkActive="routerLinkActive"
+          [routerLink]="[]"
+          [queryParams]="{ groupOfSetIndexParam: i }"
+          [activated]="routerLinkActive.isActive"
+        >
+          <mat-icon
+            matListItemIcon
+            [ngSwitch]="groupOfSet.expand.exerciseId.type"
+          >
+            <!-- TODO these icons check how to get more material icons  -->
+            <ng-container *ngSwitchCase="'reps'">fitness_center</ng-container>
+            <ng-container *ngSwitchCase="'distance'">send</ng-container>
+            <ng-container *ngSwitchCase="'score'">looks_one</ng-container>
+            <ng-container matListItemIcon *ngSwitchCase="'time'"
+              >timer</ng-container
+            >
+            <ng-container matListItemIcon *ngSwitchCaseDefault
+              >question_mark</ng-container
+            >
+          </mat-icon>
 
-    <app-group-of-set
-      *ngIf="groupOfSetSelected()"
-      [groupOfSet]="groupOfSetSelected()!"
-    />
+          <span matListItemTitle>{{ groupOfSet.expand.exerciseId.name }}</span>
+          <span matListItemLine>{{
+            groupOfSet.sets | shortenSets : groupOfSet.expand.exerciseId.type
+          }}</span>
+
+          <!-- <button mat-icon-button matListItemMeta>
+            <mat-icon>history</mat-icon>
+          </button> -->
+        </a>
+      </mat-nav-list>
+
+      <app-group-of-set
+        *ngIf="groupOfSetSelected()"
+        [groupOfSet]="groupOfSetSelected()!"
+      />
+    </div>
   `,
-  styles: [],
+  styles: [
+    `
+      .session {
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 500px;
+        cursor: pointer;
+      }
+      .notes {
+        text-align: center;
+      }
+    `,
+  ],
   imports: [
     NgFor,
     NgIf,
-    MatBottomSheetModule,
+    NgSwitch,
+    NgSwitchCase,
+    NgSwitchDefault,
+    RouterLink,
+    RouterLinkActive,
+    MatListModule,
+    MatIconModule,
     ShortenSetsPipe,
     SessionSelectCalendarComponent,
     GroupOfSetComponent,
@@ -65,8 +122,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class SessionComponent {
   private readonly _pbService = inject(PocketBaseService);
-  private readonly _router = inject(Router);
-  private readonly _activatedRoute = inject(ActivatedRoute);
 
   session: WritableSignal<
     Session<{
@@ -106,12 +161,5 @@ export class SessionComponent {
    */
   @Input() set groupOfSetIndexParam(id: string) {
     this.groupOfSetIndex.set(+id);
-  }
-
-  onOpenGroupOfSetModal(groupOfSetIndex: number) {
-    this._router.navigate([], {
-      relativeTo: this._activatedRoute,
-      queryParams: { groupOfSetIndexParam: groupOfSetIndex  },
-    });
   }
 }

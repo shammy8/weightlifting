@@ -1,6 +1,6 @@
 import { NgIf } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterModule, RouterOutlet } from '@angular/router';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -13,6 +13,7 @@ import { AuthService } from './services/auth.service';
   standalone: true,
   imports: [
     NgIf,
+    RouterLink,
     RouterOutlet,
     MatButtonModule,
     MatToolbarModule,
@@ -20,7 +21,9 @@ import { AuthService } from './services/auth.service';
   ],
   template: `
     <mat-toolbar color="primary">
-      <span>WL</span>
+      <a mat-button>
+        <span routerLink="">WL</span>
+      </a>
 
       <button
         *ngIf="authService.isLoggedIn()"
