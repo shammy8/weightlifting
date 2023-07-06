@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { NgFor } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
@@ -30,18 +30,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     SetComponent,
   ],
   template: `
-    <!-- <p>
-      {{ groupOfSet.expand.exerciseId.name }}
-    </p> -->
-
     <mat-card>
       <mat-list>
+        <!-- Top row for buttons -->
         <mat-list-item class="tall">
           <mat-grid-list cols="9" rowHeight="78px">
             <mat-grid-tile colspan="2">
-              <button mat-icon-button>
+              <!-- <button mat-icon-button>
                 <mat-icon>add_one</mat-icon>
-              </button>
+              </button> -->
             </mat-grid-tile>
             <mat-grid-tile colspan="5">
               <a
@@ -53,13 +50,18 @@ import { MatFormFieldModule } from '@angular/material/form-field';
               >
             </mat-grid-tile>
             <mat-grid-tile colspan="2">
-              <button mat-icon-button>
+              <a
+                mat-icon-button
+                routerLink="./"
+                [queryParams]="{ groupOfSetIndexParam: -1 }"
+              >
                 <mat-icon>close</mat-icon>
-              </button>
+              </a>
             </mat-grid-tile>
           </mat-grid-list>
         </mat-list-item>
 
+        <!-- column headers -->
         <mat-list-item>
           <mat-grid-list cols="3" rowHeight="48px">
             <mat-grid-tile>Set </mat-grid-tile>
@@ -68,6 +70,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
           </mat-grid-list>
         </mat-list-item>
 
+        <!-- the actual set number, weight, reps etc. -->
         <mat-list-item
           *ngFor="let set of groupOfSet.sets; let i = index"
           class="tall"
@@ -75,12 +78,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
           <mat-grid-list cols="3" rowHeight="78px">
             <mat-grid-tile> {{ 1 + i }}</mat-grid-tile>
             <mat-grid-tile>
-              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-form-field appearance="outline">
                 <input matInput max="9999" [value]="set.weight" />
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile>
-              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-form-field appearance="outline">
                 <input
                   matInput
                   max="999"
@@ -88,6 +91,17 @@ import { MatFormFieldModule } from '@angular/material/form-field';
                   [value]="set.reps"
                 /> </mat-form-field
             ></mat-grid-tile>
+          </mat-grid-list>
+        </mat-list-item>
+
+        <!-- bottom row for add button -->
+        <mat-list-item class="tall">
+          <mat-grid-list cols="1">
+            <mat-grid-tile>
+              <button mat-fab color="primary" (click)="addSet.emit()">
+                <mat-icon>add</mat-icon>
+              </button>
+            </mat-grid-tile>
           </mat-grid-list>
         </mat-list-item>
       </mat-list>
@@ -129,4 +143,6 @@ export class GroupOfSetComponent {
         },
       },
     };
+
+  @Output() addSet = new EventEmitter();
 }

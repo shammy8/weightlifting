@@ -89,6 +89,7 @@ import { SessionSelectCalendarComponent } from '../session-select-calendar/sessi
       <app-group-of-set
         *ngIf="groupOfSetSelected()"
         [groupOfSet]="groupOfSetSelected()!"
+        (addSet)="addSet()"
       />
     </div>
   `,
@@ -161,5 +162,9 @@ export class SessionComponent {
    */
   @Input() set groupOfSetIndexParam(id: string) {
     this.groupOfSetIndex.set(+id);
+  }
+
+  addSet() {
+    console.log('add a set');
   }
 }

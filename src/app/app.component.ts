@@ -1,12 +1,13 @@
 import { NgIf } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { RouterLink, RouterModule, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 
 import { AuthService } from './services/auth.service';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-root',
@@ -18,6 +19,12 @@ import { AuthService } from './services/auth.service';
     MatButtonModule,
     MatToolbarModule,
     MatIconModule,
+  ],
+  providers: [
+    {
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+      useValue: { subscriptSizing: 'dynamic' },
+    },
   ],
   template: `
     <mat-toolbar color="primary">
