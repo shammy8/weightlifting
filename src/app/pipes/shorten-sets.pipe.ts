@@ -42,7 +42,9 @@ export class ShortenSetsPipe implements PipeTransform {
           highest = set.reps;
         }
       });
-      return `${noOfSets} x ${lowest}-${highest}`;
+      return lowest === highest
+        ? `${noOfSets} x ${lowest}`
+        : `${noOfSets} x ${lowest}-${highest}`;
     }
 
     return `${noOfSets} sets`;
