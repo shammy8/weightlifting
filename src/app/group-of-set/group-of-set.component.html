@@ -1,0 +1,92 @@
+<mat-card>
+  <mat-list>
+    <!-- Top row for buttons -->
+    <mat-list-item class="tall">
+      <mat-grid-list cols="9" rowHeight="78px">
+        <mat-grid-tile colspan="2">
+          <!-- <button mat-icon-button>
+                <mat-icon>add_one</mat-icon>
+              </button> -->
+        </mat-grid-tile>
+        <mat-grid-tile colspan="5">
+          <a
+            extended
+            mat-fab
+            [routerLink]="['/exercise-history', groupOfSetSignal().exerciseId]"
+            queryParamsHandling="merge"
+            >History<mat-icon> history </mat-icon></a
+          >
+        </mat-grid-tile>
+        <mat-grid-tile colspan="2">
+          <a
+            mat-icon-button
+            routerLink="./"
+            [queryParams]="{ groupOfSetIndexParam: -1 }"
+          >
+            <mat-icon>close</mat-icon>
+          </a>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </mat-list-item>
+
+    <!-- column headers -->
+    <mat-list-item>
+      <mat-grid-list cols="3" rowHeight="48px">
+        <mat-grid-tile>Set </mat-grid-tile>
+        <mat-grid-tile>Weight</mat-grid-tile>
+        <mat-grid-tile>Reps</mat-grid-tile>
+      </mat-grid-list>
+    </mat-list-item>
+
+    <!-- the actual set number, weight, reps etc. -->
+    <form #form="ngForm">
+      <mat-list-item
+        *ngFor="let set of copyOfSets(); let i = index"
+        [ngModelGroup]="i.toString()"
+        class="tall"
+      >
+        <mat-grid-list cols="3" rowHeight="78px">
+          <mat-grid-tile> {{ 1 + i }}</mat-grid-tile>
+          <mat-grid-tile>
+            <mat-form-field appearance="outline">
+              <input
+                matInput
+                max="9999"
+                type="number"
+                name="weight"
+                [(ngModel)]="set.weight"
+                (ngModelChange)="modelChange(form.value)"
+                [ngModelOptions]="{ updateOn: 'blur' }"
+              />
+            </mat-form-field>
+          </mat-grid-tile>
+          <mat-grid-tile>
+            <mat-form-field appearance="outline">
+              <input
+                matInput
+                type="number"
+                max="999"
+                min="0"
+                name="reps"
+                [(ngModel)]="set.reps"
+                (ngModelChange)="modelChange(form.value)"
+                [ngModelOptions]="{ updateOn: 'blur' }"
+              /> </mat-form-field
+          ></mat-grid-tile>
+        </mat-grid-list>
+      </mat-list-item>
+      <button>Submit</button>
+    </form>
+
+    <!-- bottom row for add button -->
+    <mat-list-item class="tall">
+      <mat-grid-list cols="1">
+        <mat-grid-tile>
+          <button mat-fab color="primary" (click)="addSet.emit()">
+            <mat-icon>add</mat-icon>
+          </button>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </mat-list-item>
+  </mat-list>
+</mat-card>

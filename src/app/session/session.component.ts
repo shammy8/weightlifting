@@ -28,6 +28,7 @@ import {
   GroupOfSet,
   Session,
   emptyPocketBaseRecord,
+  Set,
 } from '../models/models';
 import { GroupOfSetComponent } from '../group-of-set/group-of-set.component';
 import { ShortenSetsPipe } from '../pipes/shorten-sets.pipe';
@@ -91,6 +92,7 @@ import { SessionSelectCalendarComponent } from '../session-select-calendar/sessi
         *ngIf="groupOfSetSelected()"
         [groupOfSet]="groupOfSetSelected()!"
         (addSet)="addSet()"
+        (updateSets)="updateSets($event)"
       />
     </div>
   `,
@@ -166,5 +168,13 @@ export class SessionComponent {
 
   addSet() {
     console.log('add a set');
+  }
+
+  async updateSets(sets: Set[]) {
+    // TODO handle error
+    await this._pbService.updateSets(this.groupOfSetSelected().id, sets);
+    this._pbService
+      .getSessionsWithGroupOfSetsAndExercise(this.session().id)
+      .then((session) => this.session.set(session));
   }
 }

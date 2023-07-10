@@ -1,5 +1,15 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  computed,
+  EventEmitter,
+  Input,
+  Output,
+  Signal,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
 import { MatButtonModule } from '@angular/material/button';
@@ -7,11 +17,16 @@ import { MatListModule } from '@angular/material/list';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
-
-import { Exercise, GroupOfSet, emptyPocketBaseRecord } from '../models/models';
-import { SetComponent } from '../set/set.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+
+import {
+  Exercise,
+  GroupOfSet,
+  emptyPocketBaseRecord,
+  Set,
+} from '../models/models';
+import { SetComponent } from '../set/set.component';
 
 // TODO clean up file
 @Component({
@@ -19,6 +34,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
   standalone: true,
   imports: [
     NgFor,
+    FormsModule,
     RouterLink,
     MatIconModule,
     MatButtonModule,
@@ -29,84 +45,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatCardModule,
     SetComponent,
   ],
-  template: `
-    <mat-card>
-      <mat-list>
-        <!-- Top row for buttons -->
-        <mat-list-item class="tall">
-          <mat-grid-list cols="9" rowHeight="78px">
-            <mat-grid-tile colspan="2">
-              <!-- <button mat-icon-button>
-                <mat-icon>add_one</mat-icon>
-              </button> -->
-            </mat-grid-tile>
-            <mat-grid-tile colspan="5">
-              <a
-                extended
-                mat-fab
-                [routerLink]="['/exercise-history', groupOfSet.exerciseId]"
-                queryParamsHandling="merge"
-                >History<mat-icon> history </mat-icon></a
-              >
-            </mat-grid-tile>
-            <mat-grid-tile colspan="2">
-              <a
-                mat-icon-button
-                routerLink="./"
-                [queryParams]="{ groupOfSetIndexParam: -1 }"
-              >
-                <mat-icon>close</mat-icon>
-              </a>
-            </mat-grid-tile>
-          </mat-grid-list>
-        </mat-list-item>
-
-        <!-- column headers -->
-        <mat-list-item>
-          <mat-grid-list cols="3" rowHeight="48px">
-            <mat-grid-tile>Set </mat-grid-tile>
-            <mat-grid-tile>Weight</mat-grid-tile>
-            <mat-grid-tile>Reps</mat-grid-tile>
-          </mat-grid-list>
-        </mat-list-item>
-
-        <!-- the actual set number, weight, reps etc. -->
-        <mat-list-item
-          *ngFor="let set of groupOfSet.sets; let i = index"
-          class="tall"
-        >
-          <mat-grid-list cols="3" rowHeight="78px">
-            <mat-grid-tile> {{ 1 + i }}</mat-grid-tile>
-            <mat-grid-tile>
-              <mat-form-field appearance="outline">
-                <input matInput max="9999" [value]="set.weight" />
-              </mat-form-field>
-            </mat-grid-tile>
-            <mat-grid-tile>
-              <mat-form-field appearance="outline">
-                <input
-                  matInput
-                  max="999"
-                  min="0"
-                  [value]="set.reps"
-                /> </mat-form-field
-            ></mat-grid-tile>
-          </mat-grid-list>
-        </mat-list-item>
-
-        <!-- bottom row for add button -->
-        <mat-list-item class="tall">
-          <mat-grid-list cols="1">
-            <mat-grid-tile>
-              <button mat-fab color="primary" (click)="addSet.emit()">
-                <mat-icon>add</mat-icon>
-              </button>
-            </mat-grid-tile>
-          </mat-grid-list>
-        </mat-list-item>
-      </mat-list>
-    </mat-card>
-  `,
+  templateUrl: './group-of-set.component.html',
   styles: [
     `
       mat-card {
@@ -127,8 +66,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
   ],
 })
 export class GroupOfSetComponent {
-  @Input({ required: true }) groupOfSet: GroupOfSet<{ exerciseId: Exercise }> =
-    {
+  groupOfSetSignal: WritableSignal<GroupOfSet<{ exerciseId: Exercise }>> =
+    signal({
       ...emptyPocketBaseRecord,
       order: 0,
       exerciseId: '',
@@ -142,7 +81,24 @@ export class GroupOfSetComponent {
           userId: '',
         },
       },
-    };
+    });
+
+  /** Copy of groupOfSet.sets to be used in the form */
+  copyOfSets: Signal<Set[]> = computed(() =>
+    structuredClone(this.groupOfSetSignal().sets)
+  );
+
+  @Input({ required: true }) set groupOfSet(
+    groupOfSet: GroupOfSet<{ exerciseId: Exercise }>
+  ) {
+    this.groupOfSetSignal.set(groupOfSet);
+  }
 
   @Output() addSet = new EventEmitter();
+  @Output() updateSets = new EventEmitter<Set[]>();
+
+  modelChange(objectSet: { [key: string]: Set }) {
+    const arraySet: Set[] = Object.values(objectSet);
+    this.updateSets.emit(arraySet);
+  }
 }
