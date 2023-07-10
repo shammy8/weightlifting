@@ -5,6 +5,7 @@ import {
   WritableSignal,
   computed,
   inject,
+  numberAttribute,
   signal,
 } from '@angular/core';
 import {
@@ -142,10 +143,9 @@ export class SessionComponent {
 
   groupOfSetIndex: WritableSignal<number | null> = signal(null);
 
-  groupOfSetSelected = computed(() =>
-    typeof this.groupOfSetIndex() === 'number'
-      ? this.session().expand['groupOfSets(sessionId)'][this.groupOfSetIndex()!]
-      : null
+  groupOfSetSelected = computed(
+    () =>
+      this.session().expand['groupOfSets(sessionId)'][this.groupOfSetIndex()!]
   );
 
   /**
@@ -160,8 +160,8 @@ export class SessionComponent {
   /**
    * The groupOfSetIndexParam query param from the router
    */
-  @Input() set groupOfSetIndexParam(id: string) {
-    this.groupOfSetIndex.set(+id);
+  @Input({ transform: numberAttribute }) set groupOfSetIndexParam(id: number) {
+    this.groupOfSetIndex.set(id);
   }
 
   addSet() {
