@@ -51,7 +51,7 @@ export class PocketBaseService {
   /** TODO not used, not tested */
   getExercisesForUser(userId: string) {
     console.log('CALL getExercisesForUser');
-    return this.pb.collection('exercises').getList<Exercise>(1, 99, {
+    return this.pb.collection('exercises').getFullList<Exercise>({
       filter: `userId = "${userId}"`,
       sort: 'name',
     });

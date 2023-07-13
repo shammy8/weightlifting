@@ -12,7 +12,11 @@
           <a
             extended
             mat-fab
-            [routerLink]="['/exercise-history', groupOfSetSignal().exerciseId]"
+            [routerLink]="[
+              '/exercise',
+              'history',
+              groupOfSetSignal().exerciseId
+            ]"
             queryParamsHandling="merge"
             >History<mat-icon> history </mat-icon></a
           >
@@ -47,9 +51,7 @@
         class="tall"
       >
         <mat-grid-list cols="12" rowHeight="78px">
-          <mat-grid-tile colspan="2">
-            {{ 1 + i }}</mat-grid-tile
-          >
+          <mat-grid-tile colspan="2"> {{ 1 + i }}</mat-grid-tile>
           <mat-grid-tile colspan="4">
             <mat-form-field appearance="outline">
               <input
