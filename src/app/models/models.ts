@@ -74,3 +74,19 @@ export const emptyPocketBaseRecord: PocketBaseRecord = {
   updated: '',
   expand: {},
 };
+
+export const emptyGroupOfSet: GroupOfSet<{ exerciseId: Exercise }> = {
+  ...emptyPocketBaseRecord,
+  order: 0,
+  exerciseId: '',
+  sessionId: '',
+  sets: [],
+  expand: {
+    exerciseId: {
+      ...emptyPocketBaseRecord,
+      name: '',
+      type: 'reps',
+      userId: '',
+    },
+  },
+};

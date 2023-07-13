@@ -1,15 +1,15 @@
 import {
   Component,
-  computed,
   EventEmitter,
   Input,
+  OnChanges,
   Output,
-  Signal,
   signal,
+  SimpleChanges,
   WritableSignal,
 } from '@angular/core';
 import { NgFor } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
 import { MatButtonModule } from '@angular/material/button';
@@ -20,12 +20,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
-import {
-  Exercise,
-  GroupOfSet,
-  emptyPocketBaseRecord,
-  Set,
-} from '../models/models';
+import { Exercise, GroupOfSet, Set, emptyGroupOfSet } from '../models/models';
 import { SetComponent } from '../set/set.component';
 
 // TODO clean up file
@@ -60,44 +55,57 @@ import { SetComponent } from '../set/set.component';
         width: 70px;
         input {
           text-align: center;
+          /* remove the up and down arrow on number inputs */
+          &::-webkit-inner-spin-button,
+          &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+          }
         }
       }
     `,
   ],
 })
-export class GroupOfSetComponent {
+export class GroupOfSetComponent implements OnChanges {
   groupOfSetSignal: WritableSignal<GroupOfSet<{ exerciseId: Exercise }>> =
-    signal({
-      ...emptyPocketBaseRecord,
-      order: 0,
-      exerciseId: '',
-      sessionId: '',
-      sets: [],
-      expand: {
-        exerciseId: {
-          ...emptyPocketBaseRecord,
-          name: '',
-          type: 'reps',
-          userId: '',
-        },
-      },
-    });
+    signal({ ...emptyGroupOfSet });
 
   /** Copy of groupOfSet.sets to be used in the form */
-  copyOfSets: Signal<Set[]> = computed(() =>
-    structuredClone(this.groupOfSetSignal().sets)
-  );
+  copyOfSets: WritableSignal<Set[]> = signal([]);
 
-  @Input({ required: true }) set groupOfSet(
-    groupOfSet: GroupOfSet<{ exerciseId: Exercise }>
-  ) {
-    this.groupOfSetSignal.set(groupOfSet);
-  }
+  @Input({ required: true }) groupOfSet: GroupOfSet<{ exerciseId: Exercise }> =
+    { ...emptyGroupOfSet };
 
-  @Output() addSet = new EventEmitter();
   @Output() updateSets = new EventEmitter<Set[]>();
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (
+      changes['groupOfSet']?.previousValue?.id !==
+      changes['groupOfSet']?.currentValue?.id
+    ) {
+      this.groupOfSetSignal.set(changes['groupOfSet'].currentValue);
+      this.copyOfSets.set(
+        structuredClone(changes['groupOfSet'].currentValue.sets)
+      );
+    }
+  }
+
   modelChange(objectSet: { [key: string]: Set }) {
+    this._convertSetToArrayAndEmit(objectSet);
+  }
+
+  addSet() {
+    this.copyOfSets.mutate((oldSets) =>
+      oldSets.push({ weight: null, reps: null, distance: null, time: null })
+    );
+  }
+
+  removeSet(setNumber: number, form: NgForm) {
+    this.copyOfSets.mutate((oldSets) => oldSets.splice(setNumber, 1));
+    // form doesn't update synchronously after removing a set
+    setTimeout(() => this._convertSetToArrayAndEmit(form.value));
+  }
+
+  private _convertSetToArrayAndEmit(objectSet: { [key: string]: Set }) {
     const arraySet: Set[] = Object.values(objectSet);
     this.updateSets.emit(arraySet);
   }

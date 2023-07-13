@@ -31,10 +31,11 @@
 
     <!-- column headers -->
     <mat-list-item>
-      <mat-grid-list cols="3" rowHeight="48px">
-        <mat-grid-tile>Set </mat-grid-tile>
-        <mat-grid-tile>Weight</mat-grid-tile>
-        <mat-grid-tile>Reps</mat-grid-tile>
+      <mat-grid-list cols="12" rowHeight="48px">
+        <mat-grid-tile colspan="2">Set</mat-grid-tile>
+        <mat-grid-tile colspan="4">Weight</mat-grid-tile>
+        <mat-grid-tile colspan="4">Reps</mat-grid-tile>
+        <mat-grid-tile colspan="2"></mat-grid-tile>
       </mat-grid-list>
     </mat-list-item>
 
@@ -45,9 +46,11 @@
         [ngModelGroup]="i.toString()"
         class="tall"
       >
-        <mat-grid-list cols="3" rowHeight="78px">
-          <mat-grid-tile> {{ 1 + i }}</mat-grid-tile>
-          <mat-grid-tile>
+        <mat-grid-list cols="12" rowHeight="78px">
+          <mat-grid-tile colspan="2">
+            {{ 1 + i }}</mat-grid-tile
+          >
+          <mat-grid-tile colspan="4">
             <mat-form-field appearance="outline">
               <input
                 matInput
@@ -60,7 +63,7 @@
               />
             </mat-form-field>
           </mat-grid-tile>
-          <mat-grid-tile>
+          <mat-grid-tile colspan="4">
             <mat-form-field appearance="outline">
               <input
                 matInput
@@ -73,16 +76,20 @@
                 [ngModelOptions]="{ updateOn: 'blur' }"
               /> </mat-form-field
           ></mat-grid-tile>
+          <mat-grid-tile colspan="2">
+            <button mat-icon-button (click)="removeSet(i, form)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-grid-tile>
         </mat-grid-list>
       </mat-list-item>
-      <button>Submit</button>
     </form>
 
     <!-- bottom row for add button -->
     <mat-list-item class="tall">
       <mat-grid-list cols="1">
         <mat-grid-tile>
-          <button mat-fab color="primary" (click)="addSet.emit()">
+          <button mat-fab color="primary" (click)="addSet()">
             <mat-icon>add</mat-icon>
           </button>
         </mat-grid-tile>
