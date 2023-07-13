@@ -1,17 +1,22 @@
 import { Component, WritableSignal, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+
+import { take } from 'rxjs';
 
 import { PocketBaseService } from '../pocket-base.service';
 import { Exercise } from '../models/models';
 import { AuthService } from '../services/auth.service';
-import { MatButtonModule } from '@angular/material/button';
-import { RouterLink } from '@angular/router';
-import { AddExerciseDialogComponent } from '../add-exercise-dialog/add-exercise-dialog.component';
+import {
+  AddExerciseDialogComponent,
+  NewExercise,
+} from '../add-exercise-dialog/add-exercise-dialog.component';
 
 @Component({
   standalone: true,
@@ -76,11 +81,23 @@ export class ExercisesComponent {
   }
 
   openAddExerciseDialog() {
-    const dialogRef = this._dialog.open(AddExerciseDialogComponent, {
+    const dialogRef = this._dialog.open<
+      AddExerciseDialogComponent,
+      { exercises: Exercise[] },
+      NewExercise
+    >(AddExerciseDialogComponent, {
       data: { exercises: this.exercises() },
     });
 
-    dialogRef.afterClosed().subscribe(console.log);
+    dialogRef
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((newExercise) => {
+        if (!newExercise) {
+          return;
+        }
+        console.log(newExercise);
+      });
   }
 
   onDelete(exerciseId: string) {}
