@@ -6,7 +6,7 @@ import { AuthService } from './services/auth.service';
 import { SessionComponent } from './session/session.component';
 import { ExerciseHistoryComponent } from './exercise-history/exercise-history.component';
 import { MainComponent } from './main/main.component';
-import { ExerciseComponent } from './exercise/exercise.component';
+import { ExercisesComponent } from './exercises/exercises.component';
 
 const authGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
@@ -43,8 +43,8 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
-    path: 'exercise',
-    component: ExerciseComponent,
+    path: 'exercises',
+    component: ExercisesComponent,
     canActivate: [authGuard],
   },
   {

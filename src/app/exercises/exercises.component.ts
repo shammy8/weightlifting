@@ -4,12 +4,14 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { PocketBaseService } from '../pocket-base.service';
 import { Exercise } from '../models/models';
 import { AuthService } from '../services/auth.service';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
+import { AddExerciseDialogComponent } from '../add-exercise-dialog/add-exercise-dialog.component';
 
 @Component({
   standalone: true,
@@ -20,12 +22,14 @@ import { RouterLink } from '@angular/router';
     MatIconModule,
     MatButtonModule,
     MatMenuModule,
+    MatDialogModule,
   ],
   template: `
+    <!-- TODO message for when there are no exercises, when there is an error -->
     <mat-list>
       <mat-list-item *ngFor="let exercise of exercises()">
-          <!-- TODO customise icon for exercise type -->
-        <mat-icon matListItemIcon>home</mat-icon> 
+        <!-- TODO customise icon for exercise type -->
+        <mat-icon matListItemIcon>home</mat-icon>
 
         <span matListItemTitle> {{ exercise.name }}</span>
         <span matListItemLine> {{ exercise.type }}</span>
@@ -36,7 +40,10 @@ import { RouterLink } from '@angular/router';
           </button>
         </span>
         <mat-menu #menu>
-          <a mat-menu-item [routerLink]="['/exercise', 'history', exercise.id]">
+          <a
+            mat-menu-item
+            [routerLink]="['/exercises', 'history', exercise.id]"
+          >
             <mat-icon>history</mat-icon><span>History</span>
           </a>
           <button mat-menu-item>
@@ -46,13 +53,16 @@ import { RouterLink } from '@angular/router';
         </mat-menu>
       </mat-list-item>
     </mat-list>
-    <button mat-fab (click)="addExercise()"><mat-icon>add</mat-icon></button>
+    <button mat-fab (click)="openAddExerciseDialog()">
+      <mat-icon>add</mat-icon>
+    </button>
   `,
   styles: [],
 })
-export class ExerciseComponent {
+export class ExercisesComponent {
   private readonly _pbService = inject(PocketBaseService);
   private readonly _autService = inject(AuthService);
+  private readonly _dialog = inject(MatDialog);
 
   exercises: WritableSignal<Exercise[]> = signal([]);
 
@@ -62,10 +72,16 @@ export class ExerciseComponent {
       .then((exercises) => {
         this.exercises.set(exercises);
       });
-      // TODO .error(err => {})
+    // TODO .error(err => {})
   }
 
-  addExercise() {}
+  openAddExerciseDialog() {
+    const dialogRef = this._dialog.open(AddExerciseDialogComponent, {
+      data: { exercises: this.exercises() },
+    });
+
+    dialogRef.afterClosed().subscribe(console.log);
+  }
 
   onDelete(exerciseId: string) {}
 }
