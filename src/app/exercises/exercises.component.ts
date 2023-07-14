@@ -66,18 +66,13 @@ import {
 })
 export class ExercisesComponent {
   private readonly _pbService = inject(PocketBaseService);
-  private readonly _autService = inject(AuthService);
+  private readonly _authService = inject(AuthService);
   private readonly _dialog = inject(MatDialog);
 
   exercises: WritableSignal<Exercise[]> = signal([]);
 
   constructor() {
-    this._pbService
-      .getExercisesForUser(this._autService.userRecord()!.id)
-      .then((exercises) => {
-        this.exercises.set(exercises);
-      });
-    // TODO .error(err => {})
+    this._getExercisesAndSetToExercises();
   }
 
   openAddExerciseDialog() {
@@ -96,9 +91,19 @@ export class ExercisesComponent {
         if (!newExercise) {
           return;
         }
-        console.log(newExercise);
+        this._pbService
+          .createNewExercise(newExercise, this._authService.userRecord()!.id)
+          .then(() => this._getExercisesAndSetToExercises());
       });
   }
 
   onDelete(exerciseId: string) {}
+
+  private async _getExercisesAndSetToExercises() {
+    const exercises = await this._pbService.getExercisesForUser(
+      this._authService.userRecord()!.id
+    );
+    this.exercises.set(exercises);
+    // TODO handle error
+  }
 }

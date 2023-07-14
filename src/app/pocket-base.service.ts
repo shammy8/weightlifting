@@ -4,6 +4,7 @@ import 'cross-fetch/polyfill';
 import PocketBase from 'pocketbase';
 
 import { Exercise, GroupOfSet, Session, Set } from './models/models';
+import { NewExercise } from './add-exercise-dialog/add-exercise-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -55,6 +56,11 @@ export class PocketBaseService {
       filter: `userId = "${userId}"`,
       sort: 'name',
     });
+  }
+
+  createNewExercise(newExercise: NewExercise, userId: string) {
+    console.log('CALL createNewExercise')
+    return this.pb.collection('exercises').create({...newExercise, userId})
   }
 
   updateSets(groupOfSetId: string, sets: Set[]) {
