@@ -51,9 +51,15 @@ import {
           >
             <mat-icon>history</mat-icon><span>History</span>
           </a>
-          <button mat-menu-item>
-            <mat-icon (click)="onDelete(exercise.id)">delete</mat-icon
-            ><span>Delete</span>
+          <button
+            mat-menu-item
+            *ngIf="!exercise.hidden"
+            (click)="onHide(exercise.id)"
+          >
+            <mat-icon>visibility_off</mat-icon><span>Hide</span>
+          </button>
+          <button mat-menu-item (click)="onDelete(exercise.id)">
+            <mat-icon>delete</mat-icon><span>Delete</span>
           </button>
         </mat-menu>
       </mat-list-item>
@@ -97,7 +103,13 @@ export class ExercisesComponent {
       });
   }
 
-  onDelete(exerciseId: string) {}
+  onDelete(exerciseId: string) {
+    console.log('delete', exerciseId);
+  }
+
+  onHide(exerciseId: string) {
+    console.log('hide', exerciseId);
+  }
 
   private async _getExercisesAndSetToExercises() {
     const exercises = await this._pbService.getExercisesForUser(

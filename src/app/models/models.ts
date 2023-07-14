@@ -42,6 +42,7 @@ export interface SetCollection<T = {}> extends PocketBaseRecord<T> {
 }
 
 export interface Exercise<T = {}> extends PocketBaseRecord<T> {
+  hidden: boolean;
   name: string;
   type: ExerciseType;
   userId: string;
@@ -84,6 +85,7 @@ export const emptyGroupOfSet: GroupOfSet<{ exerciseId: Exercise }> = {
   expand: {
     exerciseId: {
       ...emptyPocketBaseRecord,
+      hidden: false,
       name: '',
       type: 'reps',
       userId: '',

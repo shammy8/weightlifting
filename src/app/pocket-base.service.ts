@@ -59,8 +59,13 @@ export class PocketBaseService {
   }
 
   createNewExercise(newExercise: NewExercise, userId: string) {
-    console.log('CALL createNewExercise')
-    return this.pb.collection('exercises').create({...newExercise, userId})
+    console.log('CALL createNewExercise');
+    return this.pb.collection('exercises').create({ ...newExercise, userId });
+  }
+
+  deleteExercise(exerciseId: string) {
+    console.log('CALL deleteExercise');
+    return this.pb.collection('exercises').delete(exerciseId);
   }
 
   updateSets(groupOfSetId: string, sets: Set[]) {
