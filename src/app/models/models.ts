@@ -76,19 +76,20 @@ export const emptyPocketBaseRecord: PocketBaseRecord = {
   expand: {},
 };
 
+// TODO currently only used in this file
+export const emptyExercise: Exercise = {
+  ...emptyPocketBaseRecord,
+  hidden: false,
+  name: '',
+  type: 'reps',
+  userId: '',
+};
+
 export const emptyGroupOfSet: GroupOfSet<{ exerciseId: Exercise }> = {
   ...emptyPocketBaseRecord,
   order: 0,
   exerciseId: '',
   sessionId: '',
   sets: [],
-  expand: {
-    exerciseId: {
-      ...emptyPocketBaseRecord,
-      hidden: false,
-      name: '',
-      type: 'reps',
-      userId: '',
-    },
-  },
+  expand: { exerciseId: { ...emptyExercise } },
 };

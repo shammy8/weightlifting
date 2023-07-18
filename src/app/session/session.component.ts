@@ -33,6 +33,8 @@ import {
 import { GroupOfSetComponent } from '../group-of-set/group-of-set.component';
 import { ShortenSetsPipe } from '../pipes/shorten-sets.pipe';
 import { SessionSelectCalendarComponent } from '../session-select-calendar/session-select-calendar.component';
+import { AuthService } from '../services/auth.service';
+import { ExerciseAutocompleteComponent } from '../exercise-autocomplete/exercise-autocomplete.component';
 
 @Component({
   selector: 'app-session',
@@ -88,10 +90,14 @@ import { SessionSelectCalendarComponent } from '../session-select-calendar/sessi
         </a>
       </mat-nav-list>
 
+      <app-exercise-autocomplete
+        [exercises]="exercises()"
+        (exerciseIdSelected)="addExerciseToSession($event)"
+      />
+
       <app-group-of-set
         *ngIf="groupOfSetSelected()"
         [groupOfSet]="groupOfSetSelected()!"
-        (addSet)="addSet()"
         (updateSets)="updateSets($event)"
       />
     </div>
@@ -122,10 +128,12 @@ import { SessionSelectCalendarComponent } from '../session-select-calendar/sessi
     ShortenSetsPipe,
     SessionSelectCalendarComponent,
     GroupOfSetComponent,
+    ExerciseAutocompleteComponent,
   ],
 })
 export class SessionComponent {
   private readonly _pbService = inject(PocketBaseService);
+  private readonly _authService = inject(AuthService);
 
   session: WritableSignal<
     Session<{
@@ -144,6 +152,8 @@ export class SessionComponent {
   );
 
   groupOfSetIndex: WritableSignal<number | null> = signal(null);
+
+  exercises: WritableSignal<Exercise[]> = signal([]);
 
   groupOfSetSelected = computed(
     () =>
@@ -166,8 +176,8 @@ export class SessionComponent {
     this.groupOfSetIndex.set(id);
   }
 
-  addSet() {
-    console.log('add a set');
+  constructor() {
+    this._getExerciseAndSetToExercises();
   }
 
   async updateSets(sets: Set[]) {
@@ -176,5 +186,17 @@ export class SessionComponent {
     this._pbService
       .getSessionsWithGroupOfSetsAndExercise(this.session().id)
       .then((session) => this.session.set(session));
+  }
+
+  addExerciseToSession(exerciseId: string) {
+    // TODO
+    console.log('addExerciseToSession', exerciseId);
+  }
+
+  private async _getExerciseAndSetToExercises() {
+    const exercises = await this._pbService.getExercisesForUser(
+      this._authService.userRecord()!.id
+    );
+    this.exercises.set(exercises);
   }
 }

@@ -22,6 +22,7 @@
     "@angular/platform-browser": "^16.1.0",
     "@angular/platform-browser-dynamic": "^16.1.0",
     "@angular/router": "^16.1.0",
+    "@ng-select/ng-select": "^11.0.0",
     "cross-fetch": "^3.1.6",
     "luxon": "^3.3.0",
     "pocketbase": "^0.15.2",
