@@ -2,6 +2,9 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 import { ExerciseType, Set } from '../models/models';
 
+/**
+ * A pipe which takes in an array of Set and display the number of sets and reps in a shorten format.
+ */
 @Pipe({
   name: 'shortenSets',
   pure: true,
@@ -42,11 +45,18 @@ export class ShortenSetsPipe implements PipeTransform {
           highest = set.reps;
         }
       });
-      return lowest === highest
-        ? `${noOfSets} x ${lowest}`
-        : `${noOfSets} x ${lowest}-${highest}`;
+
+      if (lowest === highest) {
+        if (lowest === null) {
+          return '';
+        } else {
+          return `${noOfSets} x ${lowest}`;
+        }
+      } else {
+        return `${noOfSets} x ${lowest}-${highest}`;
+      }
     }
 
-    return `${noOfSets} sets`;
+    return `${noOfSets} set(s)`;
   }
 }
