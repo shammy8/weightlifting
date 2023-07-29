@@ -78,6 +78,11 @@ export class PocketBaseService {
     });
   }
 
+  deleteGroupOfSets(groupOfSetId: string) {
+    console.log('CALL deleteGroupOfSets');
+    return this.pb.collection('groupOfSets').delete(groupOfSetId);
+  }
+
   updateSets(groupOfSetId: string, sets: Set[]) {
     console.log('CALL updateSets');
     return this.pb.collection('groupOfSets').update(groupOfSetId, { sets });

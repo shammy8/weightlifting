@@ -20,6 +20,8 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
 
 import { DateTime } from 'luxon';
 
@@ -85,9 +87,14 @@ import { ExerciseAutocompleteComponent } from '../exercise-autocomplete/exercise
             groupOfSet.sets | shortenSets : groupOfSet.expand.exerciseId.type
           }}</span>
 
-          <!-- <button mat-icon-button matListItemMeta>
-            <mat-icon>history</mat-icon>
-          </button> -->
+          <span matListItemMeta>
+            <button mat-icon-button (click)="$event.stopPropagation(); $event.preventDefault()" [matMenuTriggerFor]="menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+          </span>
+          <mat-menu #menu>
+            <button mat-menu-item (click)="deleteGroupOfSets(groupOfSet.id)">Delete</button>
+          </mat-menu>
         </a>
       </mat-nav-list>
 
@@ -126,6 +133,8 @@ import { ExerciseAutocompleteComponent } from '../exercise-autocomplete/exercise
     RouterLinkActive,
     MatListModule,
     MatIconModule,
+    MatButtonModule,
+    MatMenuModule,
     ShortenSetsPipe,
     SessionSelectCalendarComponent,
     GroupOfSetComponent,
@@ -209,6 +218,15 @@ export class SessionComponent {
       queryParams: { groupOfSetIndexParam: orderOfNewGroupOfSet },
     });
     this.exerciseAutocompleteComponent?.setToNull();
+  }
+
+  async deleteGroupOfSets(groupOfSetId: string) {
+    await this._pbService.deleteGroupOfSets(groupOfSetId);
+    const updatedSession =
+      await this._pbService.getSessionsWithGroupOfSetsAndExercise(
+        this.session().id
+      );
+    this.session.set(updatedSession);
   }
 
   private async _getExerciseAndSetToExercises() {
