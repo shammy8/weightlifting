@@ -4,14 +4,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <p>
-      exercise-history works!
-    </p>
-  `,
-  styles: [
-  ]
+  template: ` <p>exercise-history works!</p> `,
+  styles: [],
 })
-export class ExerciseHistoryComponent {
-
-}
+export class ExerciseHistoryComponent {}

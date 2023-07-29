@@ -68,6 +68,16 @@ export class PocketBaseService {
     return this.pb.collection('exercises').delete(exerciseId);
   }
 
+  addGroupOfSetToSession(sessionId: string, exerciseId: string, order: number) {
+    console.log('CALL addGroupOfSetToSession');
+    return this.pb.collection('groupOfSets').create({
+      sessionId,
+      exerciseId,
+      order,
+      sets: [{ reps: null, time: null, weight: null, distance: null }],
+    });
+  }
+
   updateSets(groupOfSetId: string, sets: Set[]) {
     console.log('CALL updateSets');
     return this.pb.collection('groupOfSets').update(groupOfSetId, { sets });

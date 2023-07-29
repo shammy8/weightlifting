@@ -2,6 +2,7 @@ import {
   Component,
   Input,
   Signal,
+  ViewChild,
   WritableSignal,
   computed,
   inject,
@@ -15,7 +16,7 @@ import {
   NgSwitchCase,
   NgSwitchDefault,
 } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -92,7 +93,7 @@ import { ExerciseAutocompleteComponent } from '../exercise-autocomplete/exercise
 
       <app-exercise-autocomplete
         [exercises]="exercises()"
-        (exerciseIdSelected)="addExerciseToSession($event)"
+        (exerciseIdSelected)="addGroupOfSetToSession($event)"
       />
 
       <app-group-of-set
@@ -132,8 +133,11 @@ import { ExerciseAutocompleteComponent } from '../exercise-autocomplete/exercise
   ],
 })
 export class SessionComponent {
+  @ViewChild(ExerciseAutocompleteComponent) exerciseAutocompleteComponent: ExerciseAutocompleteComponent | null = null;
+
   private readonly _pbService = inject(PocketBaseService);
   private readonly _authService = inject(AuthService);
+  private readonly _router = inject(Router);
 
   session: WritableSignal<
     Session<{
@@ -188,9 +192,23 @@ export class SessionComponent {
       .then((session) => this.session.set(session));
   }
 
-  addExerciseToSession(exerciseId: string) {
-    // TODO
-    console.log('addExerciseToSession', exerciseId);
+  async addGroupOfSetToSession(exerciseId: string) {
+    const orderOfNewGroupOfSet =
+      this.session().expand['groupOfSets(sessionId)'].length;
+    await this._pbService.addGroupOfSetToSession(
+      this.session().id,
+      exerciseId,
+      orderOfNewGroupOfSet
+    );
+    const updatedSession =
+      await this._pbService.getSessionsWithGroupOfSetsAndExercise(
+        this.session().id
+      );
+    this.session.set(updatedSession);
+    this._router.navigate([], {
+      queryParams: { groupOfSetIndexParam: orderOfNewGroupOfSet },
+    });
+    this.exerciseAutocompleteComponent?.setToNull();
   }
 
   private async _getExerciseAndSetToExercises() {

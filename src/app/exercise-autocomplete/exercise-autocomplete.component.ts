@@ -1,11 +1,11 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
-import { NgSelectModule } from '@ng-select/ng-select';
+import { NgSelectComponent, NgSelectModule } from '@ng-select/ng-select';
 
 import { Exercise } from '../models/models';
 
@@ -50,6 +50,8 @@ import { Exercise } from '../models/models';
   ],
 })
 export class ExerciseAutocompleteComponent {
+  @ViewChild(NgSelectComponent) ngSelectComponent!: NgSelectComponent;
+
   @Input() exercises: Exercise[] = [];
   @Output() exerciseIdSelected = new EventEmitter<string>();
 
@@ -60,7 +62,11 @@ export class ExerciseAutocompleteComponent {
   }
 
   onAddNewExercise() {
-    // TODO
+    // TODO:
     console.log('add new exercise');
+  }
+
+  setToNull() {
+    this.ngSelectComponent.handleClearClick();
   }
 }
