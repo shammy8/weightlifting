@@ -113,7 +113,7 @@ export class ExercisesComponent {
 
   private async _getExercisesAndSetToExercises() {
     const exercises = await this._pbService.getExercisesForUser(
-      this._authService.userRecord()!.id
+      this._authService.userRecord()!.id,
     );
     this.exercises.set(exercises);
     // TODO handle error

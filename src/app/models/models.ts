@@ -1,7 +1,7 @@
 /**
  * TODO not used yet
  */
-export interface User<T = {}> extends PocketBaseRecord<T> {
+export interface User<T = object> extends PocketBaseRecord<T> {
   avatar: string;
   email: string;
   emailVisibility: boolean;
@@ -10,13 +10,13 @@ export interface User<T = {}> extends PocketBaseRecord<T> {
   verified: boolean;
 }
 
-export interface Session<T = {}> extends PocketBaseRecord<T> {
+export interface Session<T = object> extends PocketBaseRecord<T> {
   date: string;
   notes: string;
   userId: string;
 }
 
-export interface GroupOfSet<T = {}> extends PocketBaseRecord<T> {
+export interface GroupOfSet<T = object> extends PocketBaseRecord<T> {
   exerciseId: string;
   order: number;
   sessionId: string;
@@ -33,7 +33,7 @@ export interface Set {
 /**
  * TODO delete this and delete table on pocket base too
  */
-export interface SetCollection<T = {}> extends PocketBaseRecord<T> {
+export interface SetCollection<T = object> extends PocketBaseRecord<T> {
   groupOfSetsId: string;
   order: number;
   reps: number;
@@ -41,7 +41,7 @@ export interface SetCollection<T = {}> extends PocketBaseRecord<T> {
   weight: number;
 }
 
-export interface Exercise<T = {}> extends PocketBaseRecord<T> {
+export interface Exercise<T = object> extends PocketBaseRecord<T> {
   hidden: boolean;
   name: string;
   type: ExerciseType;
@@ -52,7 +52,7 @@ export interface Exercise<T = {}> extends PocketBaseRecord<T> {
 export type ExerciseType = 'reps' | 'time' | 'distance' | 'score' | 'note';
 
 // There is a class called Record in pocket base but doesn't allow you to configure the expand
-interface PocketBaseRecord<T = {}> {
+interface PocketBaseRecord<T = object> {
   collectionId: string;
   collectionName: string;
   /**

@@ -28,7 +28,7 @@ export class DuplicateExerciseNameValidator implements Validator {
       return null;
     }
 
-    for (let exercise of this.exercises) {
+    for (const exercise of this.exercises) {
       if (exercise.name === control.value.trim()) {
         return { duplicateExerciseName: true };
       }

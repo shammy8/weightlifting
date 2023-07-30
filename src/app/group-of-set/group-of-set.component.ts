@@ -84,7 +84,7 @@ export class GroupOfSetComponent implements OnChanges {
     ) {
       this.groupOfSetSignal.set(changes['groupOfSet'].currentValue);
       this.copyOfSets.set(
-        structuredClone(changes['groupOfSet'].currentValue.sets)
+        structuredClone(changes['groupOfSet'].currentValue.sets),
       );
     }
   }
@@ -95,7 +95,7 @@ export class GroupOfSetComponent implements OnChanges {
 
   addSet() {
     this.copyOfSets.mutate((oldSets) =>
-      oldSets.push({ weight: null, reps: null, distance: null, time: null })
+      oldSets.push({ weight: null, reps: null, distance: null, time: null }),
     );
   }
 

@@ -84,16 +84,22 @@ import { ExerciseAutocompleteComponent } from '../exercise-autocomplete/exercise
 
           <span matListItemTitle>{{ groupOfSet.expand.exerciseId.name }}</span>
           <span matListItemLine>{{
-            groupOfSet.sets | shortenSets : groupOfSet.expand.exerciseId.type
+            groupOfSet.sets | shortenSets: groupOfSet.expand.exerciseId.type
           }}</span>
 
           <span matListItemMeta>
-            <button mat-icon-button (click)="$event.stopPropagation(); $event.preventDefault()" [matMenuTriggerFor]="menu">
+            <button
+              mat-icon-button
+              (click)="$event.stopPropagation(); $event.preventDefault()"
+              [matMenuTriggerFor]="menu"
+            >
               <mat-icon>more_vert</mat-icon>
             </button>
           </span>
           <mat-menu #menu>
-            <button mat-menu-item (click)="deleteGroupOfSets(groupOfSet.id)">Delete</button>
+            <button mat-menu-item (click)="deleteGroupOfSets(groupOfSet.id)">
+              Delete
+            </button>
           </mat-menu>
         </a>
       </mat-nav-list>
@@ -142,7 +148,8 @@ import { ExerciseAutocompleteComponent } from '../exercise-autocomplete/exercise
   ],
 })
 export class SessionComponent {
-  @ViewChild(ExerciseAutocompleteComponent) exerciseAutocompleteComponent: ExerciseAutocompleteComponent | null = null;
+  @ViewChild(ExerciseAutocompleteComponent)
+  exerciseAutocompleteComponent: ExerciseAutocompleteComponent | null = null;
 
   private readonly _pbService = inject(PocketBaseService);
   private readonly _authService = inject(AuthService);
@@ -161,7 +168,7 @@ export class SessionComponent {
   });
 
   sessionDate: Signal<DateTime | null> = computed(() =>
-    DateTime.fromSQL(this.session().date)
+    DateTime.fromSQL(this.session().date),
   );
 
   groupOfSetIndex: WritableSignal<number | null> = signal(null);
@@ -170,7 +177,7 @@ export class SessionComponent {
 
   groupOfSetSelected = computed(
     () =>
-      this.session().expand['groupOfSets(sessionId)'][this.groupOfSetIndex()!]
+      this.session().expand['groupOfSets(sessionId)'][this.groupOfSetIndex()!],
   );
 
   /**
@@ -207,11 +214,11 @@ export class SessionComponent {
     await this._pbService.addGroupOfSetToSession(
       this.session().id,
       exerciseId,
-      orderOfNewGroupOfSet
+      orderOfNewGroupOfSet,
     );
     const updatedSession =
       await this._pbService.getSessionsWithGroupOfSetsAndExercise(
-        this.session().id
+        this.session().id,
       );
     this.session.set(updatedSession);
     this._router.navigate([], {
@@ -224,14 +231,14 @@ export class SessionComponent {
     await this._pbService.deleteGroupOfSets(groupOfSetId);
     const updatedSession =
       await this._pbService.getSessionsWithGroupOfSetsAndExercise(
-        this.session().id
+        this.session().id,
       );
     this.session.set(updatedSession);
   }
 
   private async _getExerciseAndSetToExercises() {
     const exercises = await this._pbService.getExercisesForUser(
-      this._authService.userRecord()!.id
+      this._authService.userRecord()!.id,
     );
     this.exercises.set(exercises);
   }

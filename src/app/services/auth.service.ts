@@ -24,7 +24,7 @@ export class AuthService {
   constructor() {
     this.pbService.pb.authStore.onChange(
       () => this.userRecord.set(this.pbService.pb.authStore.model),
-      true
+      true,
     );
   }
 
