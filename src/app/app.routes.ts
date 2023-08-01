@@ -7,6 +7,7 @@ import { SessionComponent } from './session/session.component';
 import { ExerciseHistoryComponent } from './exercise-history/exercise-history.component';
 import { MainComponent } from './main/main.component';
 import { ExercisesComponent } from './exercises/exercises.component';
+import { AddSessionComponent } from './add-session/add-session.component';
 
 const authGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
@@ -40,6 +41,11 @@ export const routes: Routes = [
   {
     path: 'session/:sessionIdParam',
     component: SessionComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'addSession',
+    component: AddSessionComponent,
     canActivate: [authGuard],
   },
   {

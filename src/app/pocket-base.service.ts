@@ -25,6 +25,11 @@ export class PocketBaseService {
     });
   }
 
+  createSessionForUser(session: {date: string, userId: string}) {
+    console.log('CALL createSessionForUser');
+    return this.pb.collection('sessions').create<Session>(session);
+  }
+
   getGroupOfSetsWithExerciseAndSession(sessionId: string) {
     console.log('CALL getGroupOfSetsWithExerciseAndSession');
     return this.pb

@@ -1,6 +1,7 @@
 import {
   Component,
   Input,
+  OnInit,
   ViewEncapsulation,
   inject,
   signal,
@@ -84,7 +85,7 @@ import { AuthService } from '../services/auth.service';
     `,
   ],
 })
-export class SessionSelectCalendarComponent {
+export class SessionSelectCalendarComponent implements OnInit {
   @Input() type: 'calendar' | 'datepicker' = 'calendar';
   @Input() initialDate: DateTime | null = null;
 
@@ -112,7 +113,7 @@ export class SessionSelectCalendarComponent {
 
   async ngOnInit() {
     this.sessions = await this._pbService.getSessionsForUser(
-      this._autService.userRecord()!.id
+      this._autService.userRecord()!.id,
     ); // userRecord() should always be non-null because we require the user to log in before we can use this component
     this.dateClassFn = this._highlightSessionOnCalendar(this.sessions);
     this.showCalendar.set(true);
@@ -124,17 +125,20 @@ export class SessionSelectCalendarComponent {
     }
     const sessionIdSelected: string | null = this._mapDateToSessionId(
       this.sessions,
-      date
+      date,
     );
     if (sessionIdSelected) {
       this._router.navigate(['session', sessionIdSelected], {});
     } else {
+      this._router.navigate(['addSession'], {
+        queryParams: { date: date.toISODate() },
+      });
       console.log('open empty session for the input date', date.toISODate());
     }
   }
 
   private _highlightSessionOnCalendar(
-    sessions: ListResult<Session>
+    sessions: ListResult<Session>,
   ): MatCalendarCellClassFunction<DateTime> {
     const allSessionDates: DateTime[] = sessions.items.map((session) => {
       return DateTime.fromSQL(session.date).startOf('day');
