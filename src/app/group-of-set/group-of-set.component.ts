@@ -1,5 +1,6 @@
 import {
   Component,
+  computed,
   EventEmitter,
   Input,
   OnChanges,
@@ -8,7 +9,7 @@ import {
   SimpleChanges,
   WritableSignal,
 } from '@angular/core';
-import { NgFor } from '@angular/common';
+import { NgFor, NgIf, NgSwitch, NgSwitchCase } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
@@ -28,7 +29,10 @@ import { SetComponent } from '../set/set.component';
   selector: 'app-group-of-set',
   standalone: true,
   imports: [
+    NgIf,
     NgFor,
+    NgSwitch,
+    NgSwitchCase,
     FormsModule,
     RouterLink,
     MatIconModule,
@@ -71,6 +75,8 @@ export class GroupOfSetComponent implements OnChanges {
 
   /** Copy of groupOfSet.sets to be used in the form */
   copyOfSets: WritableSignal<Set[]> = signal([]);
+
+  exerciseType = computed(() => this.groupOfSetSignal().expand.exerciseId.type);
 
   @Input({ required: true }) groupOfSet: GroupOfSet<{ exerciseId: Exercise }> =
     { ...emptyGroupOfSet };
