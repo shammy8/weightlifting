@@ -28,6 +28,7 @@ export interface Set {
   time: number | null;
   weight: number | null;
   distance: number | null;
+  painScore: number | null;
 }
 
 /**

@@ -55,72 +55,83 @@
       </mat-list-item>
 
       <!-- the actual set number, weight, reps etc. -->
-      <form #form="ngForm">
-        <mat-list-item
-          *ngFor="let set of copyOfSets(); let i = index"
-          [ngModelGroup]="i.toString()"
-          class="tall"
-        >
-          <mat-grid-list cols="12" rowHeight="78px">
-            <mat-grid-tile colspan="2"> {{ 1 + i }}</mat-grid-tile>
-            <mat-grid-tile colspan="4">
-              <mat-form-field appearance="outline">
-                <input
-                  matInput
-                  max="9999"
-                  type="number"
-                  name="weight"
-                  [(ngModel)]="set.weight"
-                  (ngModelChange)="modelChange(form.value)"
-                  [ngModelOptions]="{ updateOn: 'blur' }"
-                />
-              </mat-form-field>
-            </mat-grid-tile>
-            <mat-grid-tile colspan="4">
-              <mat-form-field appearance="outline">
-                <ng-container [ngSwitch]="exerciseType()">
+      <form [formGroup]="form">
+        <ng-container formArrayName="sets">
+          <mat-list-item
+            *ngFor="let setForm of form.controls['sets'].controls; let i = index"
+            class="taller"
+          >
+            <!-- [ngClass]="{ taller: setForm.value.painScore !== null }" -->
+            <!-- {{ set | json }} -->
+            <mat-grid-list cols="12" rowHeight="79px" [formGroup]="setForm">
+              <mat-grid-tile colspan="2"> {{ 1 + i }}</mat-grid-tile>
+              <mat-grid-tile colspan="4">
+                <mat-form-field appearance="outline">
                   <input
-                    *ngSwitchCase="'reps'"
                     matInput
+                    max="9999"
                     type="number"
-                    max="999"
-                    min="0"
-                    name="reps"
-                    [(ngModel)]="set.reps"
-                    (ngModelChange)="modelChange(form.value)"
-                    [ngModelOptions]="{ updateOn: 'blur' }"
+                    formControlName="weight"
+                    name="weight"
                   />
+                </mat-form-field>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="4">
+                <mat-form-field appearance="outline">
+                  <ng-container [ngSwitch]="exerciseType()">
+                    <input
+                      *ngSwitchCase="'reps'"
+                      matInput
+                      type="number"
+                      max="999"
+                      min="0"
+                      name="reps"
+                      formControlName="reps"
+                    />
+                    <input
+                      *ngSwitchCase="'time'"
+                      matInput
+                      type="number"
+                      max="999"
+                      min="0"
+                      name="time"
+                      formControlName="time"
+                    />
+                    <input
+                      *ngSwitchCase="'distance'"
+                      matInput
+                      type="number"
+                      max="999"
+                      min="0"
+                      name="distance"
+                      formControlName="distance"
+                    />
+                  </ng-container> </mat-form-field
+              ></mat-grid-tile>
+              <mat-grid-tile colspan="2">
+                <button
+                  type="button"
+                  mat-icon-button
+                  (click)="removeSet(i)"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="10">
+                <mat-slider min="0" max="10" step="1">
                   <input
-                    *ngSwitchCase="'time'"
-                    matInput
-                    type="number"
-                    max="999"
-                    min="0"
-                    name="time"
-                    [(ngModel)]="set.time"
-                    (ngModelChange)="modelChange(form.value)"
-                    [ngModelOptions]="{ updateOn: 'blur' }"
+                    matSliderThumb
+                    name="painScore"
+                    formControlName="painScore"
                   />
-                  <input
-                    *ngSwitchCase="'distance'"
-                    matInput
-                    type="number"
-                    max="999"
-                    min="0"
-                    name="distance"
-                    [(ngModel)]="set.distance"
-                    (ngModelChange)="modelChange(form.value)"
-                    [ngModelOptions]="{ updateOn: 'blur' }"
-                  />
-                </ng-container> </mat-form-field
-            ></mat-grid-tile>
-            <mat-grid-tile colspan="2">
-              <button mat-icon-button (click)="removeSet(i, form)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </mat-grid-tile>
-          </mat-grid-list>
-        </mat-list-item>
+                </mat-slider>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="2">
+                {{ setForm.value.painScore }}
+              </mat-grid-tile>
+            </mat-grid-list>
+          </mat-list-item>
+        </ng-container>
       </form>
 
       <!-- bottom row for add button -->

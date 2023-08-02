@@ -4,13 +4,25 @@ import {
   EventEmitter,
   Input,
   OnChanges,
+  OnDestroy,
   Output,
   signal,
   SimpleChanges,
   WritableSignal,
 } from '@angular/core';
-import { NgFor, NgIf, NgSwitch, NgSwitchCase } from '@angular/common';
-import { FormsModule, NgForm } from '@angular/forms';
+import {
+  NgClass,
+  NgFor,
+  NgIf,
+  NgSwitch,
+  NgSwitchCase,
+} from '@angular/common';
+import {
+  FormArray,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
 import { MatButtonModule } from '@angular/material/button';
@@ -20,6 +32,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSliderModule } from '@angular/material/slider';
+
+import { debounceTime, Subject, takeUntil } from 'rxjs';
 
 import { Exercise, GroupOfSet, Set, emptyGroupOfSet } from '../models/models';
 import { SetComponent } from '../set/set.component';
@@ -33,7 +48,8 @@ import { SetComponent } from '../set/set.component';
     NgFor,
     NgSwitch,
     NgSwitchCase,
-    FormsModule,
+    NgClass,
+    ReactiveFormsModule,
     RouterLink,
     MatIconModule,
     MatButtonModule,
@@ -42,6 +58,7 @@ import { SetComponent } from '../set/set.component';
     MatInputModule,
     MatFormFieldModule,
     MatCardModule,
+    MatSliderModule,
     SetComponent,
   ],
   templateUrl: './group-of-set.component.html',
@@ -55,6 +72,10 @@ import { SetComponent } from '../set/set.component';
         /* height of mat-list-item */
         height: 80px;
       }
+      .taller.mdc-list-item.mdc-list-item--with-one-line {
+        /* height of mat-list-item */
+        height: 160px;
+      }
       mat-form-field {
         width: 70px;
         input {
@@ -66,17 +87,21 @@ import { SetComponent } from '../set/set.component';
           }
         }
       }
+      mat-slider {
+        width: calc(100% - 50px);
+      }
     `,
   ],
 })
-export class GroupOfSetComponent implements OnChanges {
+export class GroupOfSetComponent implements OnChanges, OnDestroy {
   groupOfSetSignal: WritableSignal<GroupOfSet<{ exerciseId: Exercise }>> =
     signal({ ...emptyGroupOfSet });
 
-  /** Copy of groupOfSet.sets to be used in the form */
-  copyOfSets: WritableSignal<Set[]> = signal([]);
-
   exerciseType = computed(() => this.groupOfSetSignal().expand.exerciseId.type);
+
+  form = this._createForm();
+
+  private readonly _destroy$ = new Subject<void>();
 
   @Input({ required: true }) groupOfSet: GroupOfSet<{ exerciseId: Exercise }> =
     { ...emptyGroupOfSet };
@@ -89,30 +114,78 @@ export class GroupOfSetComponent implements OnChanges {
       changes['groupOfSet']?.currentValue?.id
     ) {
       this.groupOfSetSignal.set(changes['groupOfSet'].currentValue);
-      this.copyOfSets.set(
-        structuredClone(changes['groupOfSet'].currentValue.sets),
-      );
+      this.form = this._createForm();
+      this._populateForm(changes['groupOfSet'].currentValue.sets);
+      this._createSubscriptionForFormChanges();
     }
   }
 
-  modelChange(objectSet: { [key: string]: Set }) {
-    this._convertSetToArrayAndEmit(objectSet);
-  }
-
   addSet() {
-    this.copyOfSets.mutate((oldSets) =>
-      oldSets.push({ weight: null, reps: null, distance: null, time: null }),
+    this.form.controls['sets'].push(
+      new FormGroup<SetForm>({
+        weight: new FormControl(null),
+        reps: new FormControl(null),
+        distance: new FormControl(null),
+        time: new FormControl(null),
+        painScore: new FormControl(null, { updateOn: 'change' }),
+      }),
     );
   }
 
-  removeSet(setNumber: number, form: NgForm) {
-    this.copyOfSets.mutate((oldSets) => oldSets.splice(setNumber, 1));
-    // form doesn't update synchronously after removing a set
-    setTimeout(() => this._convertSetToArrayAndEmit(form.value));
+  removeSet(setNumber: number) {
+    this.form.controls['sets'].removeAt(setNumber);
   }
 
-  private _convertSetToArrayAndEmit(objectSet: { [key: string]: Set }) {
-    const arraySet: Set[] = Object.values(objectSet);
-    this.updateSets.emit(arraySet);
+  ngOnDestroy() {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
+
+  private _createForm() {
+    return new FormGroup<GroupOfSetForm>(
+      { sets: new FormArray<FormGroup<SetForm>>([]) },
+      { updateOn: 'blur' },
+    );
+  }
+
+  /**
+   * Call this after _createForm
+   */
+  private _populateForm(sets: Set[]) {
+    sets.forEach((set) => {
+      this.form.controls['sets'].push(
+        new FormGroup({
+          reps: new FormControl(set.reps),
+          weight: new FormControl(set.weight),
+          painScore: new FormControl(set.painScore, { updateOn: 'change' }),
+          distance: new FormControl(set.distance),
+          time: new FormControl(set.time),
+        })
+      );
+    });
+  }
+
+  private _createSubscriptionForFormChanges() {
+    this.form.valueChanges
+      .pipe(
+        debounceTime(500),
+        // distinctUntilChanged(), // TODO add the comparator function
+        takeUntil(this._destroy$),
+      )
+      .subscribe((formValue) => {
+        this.updateSets.emit(formValue.sets as Set[]);
+      });
+  }
+}
+
+interface GroupOfSetForm {
+  sets: FormArray<FormGroup<SetForm>>;
+}
+
+interface SetForm {
+  reps: FormControl<number | null>;
+  weight: FormControl<number | null>;
+  distance: FormControl<number | null>;
+  time: FormControl<number | null>;
+  painScore: FormControl<number | null>;
 }

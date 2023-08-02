@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 
 import { Set, emptyPocketBaseRecord } from '../models/models';
 
+/**
+ * TODO: are we using this
+ */
 @Component({
   selector: 'app-set',
   standalone: true,
@@ -20,5 +23,6 @@ export class SetComponent {
     reps: 0,
     time: 0,
     weight: 0,
+    painScore: 0,
   };
 }
