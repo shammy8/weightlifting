@@ -29,7 +29,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatMenuModule } from '@angular/material/menu';
 
-import { debounceTime, Subject, takeUntil } from 'rxjs';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  startWith,
+  Subject,
+  takeUntil,
+} from 'rxjs';
 
 import { Exercise, GroupOfSet, Set, emptyGroupOfSet } from '../models/models';
 import { SetComponent } from '../set/set.component';
@@ -145,13 +151,41 @@ export class GroupOfSetComponent implements OnChanges, OnDestroy {
   private _createSubscriptionForFormChanges() {
     this.form.valueChanges
       .pipe(
+        startWith(this.form.value),
         debounceTime(500),
-        // distinctUntilChanged(), // TODO add the comparator function
+        distinctUntilChanged(this._isPrevAndCurrFormValuesTheSame),
         takeUntil(this._destroy$),
       )
       .subscribe((formValue) => {
         this.updateSets.emit(formValue.sets as Set[]);
       });
+  }
+
+  private _isPrevAndCurrFormValuesTheSame(
+    prevFormValue: Partial<{ sets: Partial<Set>[] }>,
+    currFormValue: Partial<{ sets: Partial<Set>[] }>,
+  ) {
+    const prevSet = prevFormValue.sets;
+    const currSet = currFormValue.sets;
+    if (prevSet === undefined || currSet === undefined) {
+      return false;
+    }
+
+    if (prevSet.length !== currSet.length) return false;
+
+    for (let i = 0; i < prevSet.length; i++) {
+      if (
+        prevSet[i].reps !== currSet[i].reps ||
+        prevSet[i].weight !== currSet[i].weight ||
+        prevSet[i].painScore !== currSet[i].painScore ||
+        prevSet[i].distance !== currSet[i].distance ||
+        prevSet[i].time !== currSet[i].time ||
+        prevSet[i].note !== currSet[i].note
+      ) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 
