@@ -1,0 +1,37 @@
+mat-card {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.tall.mdc-list-item.mdc-list-item--with-one-line {
+  /* height of mat-list-item */
+  height: 80px;
+}
+
+.taller.mdc-list-item.mdc-list-item--with-one-line {
+  /* height of mat-list-item */
+  height: 240px;
+}
+
+mat-form-field:has(input[type="number"]){
+  width: 70px;
+  input {
+    text-align: center;
+    /* remove the up and down arrow on number inputs */
+    &::-webkit-inner-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+    }
+  }
+}
+
+mat-form-field:has(input[type="textarea"]) {
+  width: 100%;
+  input {
+    text-align: left;
+  }
+}
+
+mat-slider {
+  width: calc(100% - 50px);
+}

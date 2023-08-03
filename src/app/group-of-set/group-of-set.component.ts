@@ -10,13 +10,7 @@ import {
   SimpleChanges,
   WritableSignal,
 } from '@angular/core';
-import {
-  NgClass,
-  NgFor,
-  NgIf,
-  NgSwitch,
-  NgSwitchCase,
-} from '@angular/common';
+import { NgClass, NgFor, NgIf, NgSwitch, NgSwitchCase } from '@angular/common';
 import {
   FormArray,
   FormControl,
@@ -64,42 +58,7 @@ import { SetComponent } from '../set/set.component';
     SetComponent,
   ],
   templateUrl: './group-of-set.component.html',
-  styles: [
-    `
-      mat-card {
-        margin-left: 10px;
-        margin-right: 10px;
-      }
-      .tall.mdc-list-item.mdc-list-item--with-one-line {
-        /* height of mat-list-item */
-        height: 80px;
-      }
-      .taller.mdc-list-item.mdc-list-item--with-one-line {
-        /* height of mat-list-item */
-        height: 240px;
-      }
-      mat-form-field {
-        width: 70px;
-        input {
-          text-align: center;
-          /* remove the up and down arrow on number inputs */
-          &::-webkit-inner-spin-button,
-          &::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-          }
-        }
-      }
-      mat-form-field:has(input[type="textarea"]) {
-        width: 100%;
-        input {
-          text-align: left;
-        }
-      }
-      mat-slider {
-        width: calc(100% - 50px);
-      }
-    `,
-  ],
+  styleUrls: ['./group-of-set.component.scss'],
 })
 export class GroupOfSetComponent implements OnChanges, OnDestroy {
   groupOfSetSignal: WritableSignal<GroupOfSet<{ exerciseId: Exercise }>> =
@@ -148,7 +107,9 @@ export class GroupOfSetComponent implements OnChanges, OnDestroy {
   }
 
   toggleExtraInfo() {
-    this.showExtraInfo() ? this.showExtraInfo.set(false) : this.showExtraInfo.set(true);
+    this.showExtraInfo()
+      ? this.showExtraInfo.set(false)
+      : this.showExtraInfo.set(true);
   }
 
   ngOnDestroy() {
@@ -176,7 +137,7 @@ export class GroupOfSetComponent implements OnChanges, OnDestroy {
           distance: new FormControl(set.distance),
           time: new FormControl(set.time),
           note: new FormControl(set.note),
-        })
+        }),
       );
     });
   }
