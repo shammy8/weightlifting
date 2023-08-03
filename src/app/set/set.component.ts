@@ -24,5 +24,6 @@ export class SetComponent {
     time: 0,
     weight: 0,
     painScore: 0,
+    note: null,
   };
 }

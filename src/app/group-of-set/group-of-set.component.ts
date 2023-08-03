@@ -33,6 +33,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSliderModule } from '@angular/material/slider';
+import { MatMenuModule } from '@angular/material/menu';
 
 import { debounceTime, Subject, takeUntil } from 'rxjs';
 
@@ -59,6 +60,7 @@ import { SetComponent } from '../set/set.component';
     MatFormFieldModule,
     MatCardModule,
     MatSliderModule,
+    MatMenuModule,
     SetComponent,
   ],
   templateUrl: './group-of-set.component.html',
@@ -74,7 +76,7 @@ import { SetComponent } from '../set/set.component';
       }
       .taller.mdc-list-item.mdc-list-item--with-one-line {
         /* height of mat-list-item */
-        height: 160px;
+        height: 240px;
       }
       mat-form-field {
         width: 70px;
@@ -85,6 +87,12 @@ import { SetComponent } from '../set/set.component';
           &::-webkit-inner-spin-button {
             -webkit-appearance: none;
           }
+        }
+      }
+      mat-form-field:has(input[type="textarea"]) {
+        width: 100%;
+        input {
+          text-align: left;
         }
       }
       mat-slider {
@@ -98,6 +106,8 @@ export class GroupOfSetComponent implements OnChanges, OnDestroy {
     signal({ ...emptyGroupOfSet });
 
   exerciseType = computed(() => this.groupOfSetSignal().expand.exerciseId.type);
+
+  showExtraInfo = signal(false);
 
   form = this._createForm();
 
@@ -128,12 +138,17 @@ export class GroupOfSetComponent implements OnChanges, OnDestroy {
         distance: new FormControl(null),
         time: new FormControl(null),
         painScore: new FormControl(null, { updateOn: 'change' }),
+        note: new FormControl(null),
       }),
     );
   }
 
   removeSet(setNumber: number) {
     this.form.controls['sets'].removeAt(setNumber);
+  }
+
+  toggleExtraInfo() {
+    this.showExtraInfo() ? this.showExtraInfo.set(false) : this.showExtraInfo.set(true);
   }
 
   ngOnDestroy() {
@@ -160,6 +175,7 @@ export class GroupOfSetComponent implements OnChanges, OnDestroy {
           painScore: new FormControl(set.painScore, { updateOn: 'change' }),
           distance: new FormControl(set.distance),
           time: new FormControl(set.time),
+          note: new FormControl(set.note),
         })
       );
     });
@@ -188,4 +204,5 @@ interface SetForm {
   distance: FormControl<number | null>;
   time: FormControl<number | null>;
   painScore: FormControl<number | null>;
+  note: FormControl<string | null>;
 }
