@@ -10,7 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 
 import { take } from 'rxjs';
 
-import { PocketBaseService } from '../pocket-base.service';
+import { PocketBaseCrudService } from '../pocket-base-crud.service';
 import { Exercise } from '../models/models';
 import { AuthService } from '../services/auth.service';
 import {
@@ -71,7 +71,7 @@ import {
   styles: [],
 })
 export class ExercisesComponent {
-  private readonly _pbService = inject(PocketBaseService);
+  private readonly _pbService = inject(PocketBaseCrudService);
   private readonly _authService = inject(AuthService);
   private readonly _dialog = inject(MatDialog);
 

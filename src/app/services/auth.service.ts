@@ -9,35 +9,35 @@ import { Router } from '@angular/router';
 
 import { Admin, Record } from 'pocketbase';
 
-import { PocketBaseService } from '../pocket-base.service';
+import { PocketBaseInstanceService } from '../pocket-base-instance.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  pbService = inject(PocketBaseService);
-  router = inject(Router);
+  private readonly _pbService = inject(PocketBaseInstanceService);
+  private readonly _router = inject(Router);
 
   userRecord: WritableSignal<Record | Admin | null> = signal(null);
   isLoggedIn = computed(() => !!this.userRecord());
 
   constructor() {
-    this.pbService.pb.authStore.onChange(
-      () => this.userRecord.set(this.pbService.pb.authStore.model),
+    this._pbService.pb.authStore.onChange(
+      () => this.userRecord.set(this._pbService.pb.authStore.model),
       true,
     );
   }
 
   async loginWithGoogle() {
-    await this.pbService.pb
+    await this._pbService.pb
       .collection('users')
       .authWithOAuth2({ provider: 'google' });
 
-    this.router.navigate(['']);
+    this._router.navigate(['']);
   }
 
   logoff() {
-    this.pbService.pb.authStore.clear();
-    this.router.navigate(['/login']);
+    this._pbService.pb.authStore.clear();
+    this._router.navigate(['/login']);
   }
 }

@@ -20,7 +20,7 @@ import { MatLuxonDateModule } from '@angular/material-luxon-adapter';
 import { DateTime } from 'luxon';
 import { ListResult } from 'pocketbase';
 
-import { PocketBaseService } from '../pocket-base.service';
+import { PocketBaseCrudService } from '../pocket-base-crud.service';
 import { Session } from '../models/models';
 import { AuthService } from '../services/auth.service';
 
@@ -90,7 +90,7 @@ export class SessionSelectCalendarComponent implements OnInit {
   @Input() initialDate: DateTime | null = null;
 
   private readonly _router = inject(Router);
-  private readonly _pbService = inject(PocketBaseService);
+  private readonly _pbService = inject(PocketBaseCrudService);
   private readonly _autService = inject(AuthService);
 
   showCalendar = signal(false);

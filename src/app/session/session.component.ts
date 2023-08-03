@@ -25,7 +25,7 @@ import { MatMenuModule } from '@angular/material/menu';
 
 import { DateTime } from 'luxon';
 
-import { PocketBaseService } from '../pocket-base.service';
+import { PocketBaseCrudService } from '../pocket-base-crud.service';
 import {
   Exercise,
   GroupOfSet,
@@ -151,7 +151,7 @@ export class SessionComponent {
   @ViewChild(ExerciseAutocompleteComponent)
   exerciseAutocompleteComponent: ExerciseAutocompleteComponent | null = null;
 
-  private readonly _pbService = inject(PocketBaseService);
+  private readonly _pbService = inject(PocketBaseCrudService);
   private readonly _authService = inject(AuthService);
   private readonly _router = inject(Router);
 

@@ -12,7 +12,7 @@ import { DateTime } from 'luxon';
 import { SessionSelectCalendarComponent } from '../session-select-calendar/session-select-calendar.component';
 import { ExerciseAutocompleteComponent } from '../exercise-autocomplete/exercise-autocomplete.component';
 import { Exercise } from '../models/models';
-import { PocketBaseService } from '../pocket-base.service';
+import { PocketBaseCrudService } from '../pocket-base-crud.service';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -44,7 +44,7 @@ import { AuthService } from '../services/auth.service';
   ],
 })
 export class AddSessionComponent {
-  private readonly _pbService = inject(PocketBaseService);
+  private readonly _pbService = inject(PocketBaseCrudService);
   private readonly _authService = inject(AuthService);
   private readonly _router = inject(Router);
 

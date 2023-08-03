@@ -1,25 +1,21 @@
-import { Injectable } from '@angular/core';
-
-import 'cross-fetch/polyfill';
-import PocketBase from 'pocketbase';
+import { Injectable, inject } from '@angular/core';
 
 import { Exercise, GroupOfSet, Session, Set } from './models/models';
 import { NewExercise } from './add-exercise-dialog/add-exercise-dialog.component';
+import { PocketBaseInstanceService } from './pocket-base-instance.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class PocketBaseService {
-  pb = new PocketBase('http://127.0.0.1:8090');
-
-  constructor() {}
+export class PocketBaseCrudService {
+   private readonly pbInstanceService = inject(PocketBaseInstanceService)
 
   // TODO update back end rules
-  // TODO how to handle pagination for below getList
 
+  // TODO how to handle pagination for below getList
   getSessionsForUser(userId: string) {
     console.log('CALL getSessionsForUser');
-    return this.pb.collection('sessions').getList<Session>(1, 20, {
+    return this.pbInstanceService.pb.collection('sessions').getList<Session>(1, 20, {
       filter: `userId = "${userId}"`,
       // changing fields/expand property means the <Session> interface will need to be changed too
     });
@@ -27,12 +23,12 @@ export class PocketBaseService {
 
   createSessionForUser(session: {date: string, userId: string}) {
     console.log('CALL createSessionForUser');
-    return this.pb.collection('sessions').create<Session>(session);
+    return this.pbInstanceService.pb.collection('sessions').create<Session>(session);
   }
 
   getGroupOfSetsWithExerciseAndSession(sessionId: string) {
     console.log('CALL getGroupOfSetsWithExerciseAndSession');
-    return this.pb
+    return this.pbInstanceService.pb
       .collection('groupOfSets')
       .getFullList<GroupOfSet<{ exerciseId: Exercise; sessionId: Session }>>({
         filter: `sessionId = "${sessionId}"`,
@@ -44,7 +40,7 @@ export class PocketBaseService {
 
   getSessionsWithGroupOfSetsAndExercise(sessionId: string) {
     console.log('CALL getSessionsWithGroupOfSetsAndExercise');
-    return this.pb.collection('sessions').getOne<
+    return this.pbInstanceService.pb.collection('sessions').getOne<
       Session<{
         'groupOfSets(sessionId)': GroupOfSet<{ exerciseId: Exercise }>[];
       }>
@@ -57,7 +53,7 @@ export class PocketBaseService {
   /** TODO not used, not tested */
   getExercisesForUser(userId: string) {
     console.log('CALL getExercisesForUser');
-    return this.pb.collection('exercises').getFullList<Exercise>({
+    return this.pbInstanceService.pb.collection('exercises').getFullList<Exercise>({
       filter: `userId = "${userId}"`,
       sort: 'name',
     });
@@ -65,17 +61,17 @@ export class PocketBaseService {
 
   createNewExercise(newExercise: NewExercise, userId: string) {
     console.log('CALL createNewExercise');
-    return this.pb.collection('exercises').create({ ...newExercise, userId });
+    return this.pbInstanceService.pb.collection('exercises').create({ ...newExercise, userId });
   }
 
   deleteExercise(exerciseId: string) {
     console.log('CALL deleteExercise');
-    return this.pb.collection('exercises').delete(exerciseId);
+    return this.pbInstanceService.pb.collection('exercises').delete(exerciseId);
   }
 
   addGroupOfSetToSession(sessionId: string, exerciseId: string, order: number) {
     console.log('CALL addGroupOfSetToSession');
-    return this.pb.collection('groupOfSets').create({
+    return this.pbInstanceService.pb.collection('groupOfSets').create({
       sessionId,
       exerciseId,
       order,
@@ -85,11 +81,11 @@ export class PocketBaseService {
 
   deleteGroupOfSets(groupOfSetId: string) {
     console.log('CALL deleteGroupOfSets');
-    return this.pb.collection('groupOfSets').delete(groupOfSetId);
+    return this.pbInstanceService.pb.collection('groupOfSets').delete(groupOfSetId);
   }
 
   updateSets(groupOfSetId: string, sets: Set[]) {
     console.log('CALL updateSets');
-    return this.pb.collection('groupOfSets').update(groupOfSetId, { sets });
+    return this.pbInstanceService.pb.collection('groupOfSets').update(groupOfSetId, { sets });
   }
 }
