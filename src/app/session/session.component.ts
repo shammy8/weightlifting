@@ -36,7 +36,6 @@ import {
 import { GroupOfSetComponent } from '../group-of-set/group-of-set.component';
 import { ShortenSetsPipe } from '../pipes/shorten-sets.pipe';
 import { SessionSelectCalendarComponent } from '../session-select-calendar/session-select-calendar.component';
-import { AuthService } from '../services/auth.service';
 import { ExerciseAutocompleteComponent } from '../exercise-autocomplete/exercise-autocomplete.component';
 
 @Component({
@@ -152,7 +151,6 @@ export class SessionComponent {
   exerciseAutocompleteComponent: ExerciseAutocompleteComponent | null = null;
 
   private readonly _pbService = inject(PocketBaseCrudService);
-  private readonly _authService = inject(AuthService);
   private readonly _router = inject(Router);
 
   session: WritableSignal<
@@ -238,7 +236,6 @@ export class SessionComponent {
 
   private async _getExerciseAndSetToExercises() {
     const exercises = await this._pbService.getExercisesForUser(
-      this._authService.userRecord()!.id,
     );
     this.exercises.set(exercises);
   }
