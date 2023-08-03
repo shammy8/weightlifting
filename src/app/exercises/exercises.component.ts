@@ -12,7 +12,6 @@ import { take } from 'rxjs';
 
 import { PocketBaseCrudService } from '../pocket-base-crud.service';
 import { Exercise } from '../models/models';
-import { AuthService } from '../services/auth.service';
 import {
   AddExerciseDialogComponent,
   NewExercise,
@@ -72,7 +71,6 @@ import {
 })
 export class ExercisesComponent {
   private readonly _pbService = inject(PocketBaseCrudService);
-  private readonly _authService = inject(AuthService);
   private readonly _dialog = inject(MatDialog);
 
   exercises: WritableSignal<Exercise[]> = signal([]);
@@ -98,7 +96,7 @@ export class ExercisesComponent {
           return;
         }
         this._pbService
-          .createNewExercise(newExercise, this._authService.userRecord()!.id)
+          .createNewExercise(newExercise)
           .then(() => this._getExercisesAndSetToExercises());
       });
   }
@@ -112,9 +110,7 @@ export class ExercisesComponent {
   }
 
   private async _getExercisesAndSetToExercises() {
-    const exercises = await this._pbService.getExercisesForUser(
-      this._authService.userRecord()!.id,
-    );
+    const exercises = await this._pbService.getExercisesForUser();
     this.exercises.set(exercises);
     // TODO handle error
   }

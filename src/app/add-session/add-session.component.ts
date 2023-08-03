@@ -13,7 +13,6 @@ import { SessionSelectCalendarComponent } from '../session-select-calendar/sessi
 import { ExerciseAutocompleteComponent } from '../exercise-autocomplete/exercise-autocomplete.component';
 import { Exercise } from '../models/models';
 import { PocketBaseCrudService } from '../pocket-base-crud.service';
-import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-add-session',
@@ -45,7 +44,6 @@ import { AuthService } from '../services/auth.service';
 })
 export class AddSessionComponent {
   private readonly _pbService = inject(PocketBaseCrudService);
-  private readonly _authService = inject(AuthService);
   private readonly _router = inject(Router);
 
   sessionDate: WritableSignal<DateTime | null> = signal(null);
@@ -68,10 +66,9 @@ export class AddSessionComponent {
     }
 
     // TODO: change below 2 to a transaction when available in pocket base
-    const newSession = await this._pbService.createSessionForUser({
-      date: this.sessionDate()?.toSQLDate() as string,
-      userId: this._authService.userRecord()!.id,
-    });
+    const newSession = await this._pbService.createSessionForUser(
+      this.sessionDate()?.toSQLDate() as string,
+    );
 
     await this._pbService.addGroupOfSetToSession(newSession.id, exerciseId, 0);
 
@@ -81,9 +78,7 @@ export class AddSessionComponent {
   }
 
   private async _getExerciseAndSetToExercises() {
-    const exercises = await this._pbService.getExercisesForUser(
-      this._authService.userRecord()!.id,
-    );
+    const exercises = await this._pbService.getExercisesForUser();
     this.exercises.set(exercises);
   }
 }
