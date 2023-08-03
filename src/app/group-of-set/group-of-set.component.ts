@@ -160,10 +160,10 @@ interface GroupOfSetForm {
 }
 
 interface SetForm {
-  reps: FormControl<number | null>;
-  weight: FormControl<number | null>;
-  distance: FormControl<number | null>;
-  time: FormControl<number | null>;
-  painScore: FormControl<number | null>;
-  note: FormControl<string | null>;
+  reps: FormControl<number | null | undefined>;
+  weight: FormControl<number | null | undefined>;
+  distance: FormControl<number | null | undefined>;
+  time: FormControl<number | null | undefined>;
+  painScore: FormControl<number | null | undefined>;
+  note: FormControl<string | null | undefined>;
 }

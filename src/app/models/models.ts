@@ -24,12 +24,12 @@ export interface GroupOfSet<T = object> extends PocketBaseRecord<T> {
 }
 
 export interface Set {
-  reps: number | null;
-  time: number | null;
-  weight: number | null;
-  distance: number | null;
-  painScore: number | null;
-  note: string | null;
+  reps?: number | null;
+  time?: number | null;
+  weight?: number | null;
+  distance?: number | null;
+  painScore?: number | null;
+  note?: string | null;
 }
 
 /**
@@ -51,9 +51,8 @@ export interface Exercise<T = object> extends PocketBaseRecord<T> {
 }
 
 // TODO: is this better as enum and a Map
-// TODO: remove score and note. Add these to each individual set?
 // TODO: add height?? Or does it not really matter reps,time, distance are all the same?
-export type ExerciseType = 'reps' | 'time' | 'distance' | 'score' | 'note';
+export type ExerciseType = 'reps' | 'time' | 'distance';
 
 // There is a class called Record in pocket base but doesn't allow you to configure the expand
 interface PocketBaseRecord<T = object> {

@@ -8,7 +8,9 @@
             <mat-icon> more_vert </mat-icon>
           </button>
           <mat-menu #menu>
-            <button mat-menu-item (click)="toggleExtraInfo()">Toggle extra info</button>
+            <button mat-menu-item (click)="toggleExtraInfo()">
+              Toggle extra info
+            </button>
           </mat-menu>
         </mat-grid-tile>
         <mat-grid-tile colspan="5">
@@ -36,132 +38,123 @@
       </mat-grid-list>
     </mat-list-item>
 
-    <ng-container *ngIf="exerciseType() !== 'score'">
-      <!-- column headers -->
-      <mat-list-item>
-        <mat-grid-list cols="12" rowHeight="48px">
-          <mat-grid-tile colspan="2">Set</mat-grid-tile>
-          <mat-grid-tile colspan="4">Weight</mat-grid-tile>
-          <ng-container [ngSwitch]="exerciseType()">
-            <mat-grid-tile *ngSwitchCase="'reps'" colspan="4"
-              >Reps</mat-grid-tile
-            >
-            <mat-grid-tile *ngSwitchCase="'time'" colspan="4"
-              >Time</mat-grid-tile
-            >
-            <mat-grid-tile *ngSwitchCase="'distance'" colspan="4"
-              >Distance</mat-grid-tile
-            >
-          </ng-container>
-          <mat-grid-tile colspan="2"></mat-grid-tile>
-        </mat-grid-list>
-      </mat-list-item>
-
-      <!-- the actual set number, weight, reps etc. -->
-      <form [formGroup]="form">
-        <ng-container formArrayName="sets">
-          <mat-list-item
-            *ngFor="
-              let setForm of form.controls['sets'].controls;
-              let i = index
-            "
-            class="tall"
-            [class.taller]="showExtraInfo()"
+    <!-- column headers -->
+    <mat-list-item>
+      <mat-grid-list cols="12" rowHeight="48px">
+        <mat-grid-tile colspan="2">Set</mat-grid-tile>
+        <mat-grid-tile colspan="4">Weight</mat-grid-tile>
+        <ng-container [ngSwitch]="exerciseType()">
+          <mat-grid-tile *ngSwitchCase="'reps'" colspan="4">Reps</mat-grid-tile>
+          <mat-grid-tile *ngSwitchCase="'time'" colspan="4">Time</mat-grid-tile>
+          <mat-grid-tile *ngSwitchCase="'distance'" colspan="4"
+            >Distance</mat-grid-tile
           >
-            <!-- [ngClass]="{ taller: setForm.value.painScore !== null }" -->
-            <!-- {{ set | json }} -->
-            <mat-grid-list cols="12" rowHeight="79px" [formGroup]="setForm">
-              <mat-grid-tile colspan="2"> {{ 1 + i }}</mat-grid-tile>
-              <mat-grid-tile colspan="4">
+        </ng-container>
+        <mat-grid-tile colspan="2"></mat-grid-tile>
+      </mat-grid-list>
+    </mat-list-item>
+
+    <!-- the actual set number, weight, reps etc. -->
+    <form [formGroup]="form">
+      <ng-container formArrayName="sets">
+        <mat-list-item
+          *ngFor="let setForm of form.controls['sets'].controls; let i = index"
+          class="tall"
+          [class.taller]="showExtraInfo()"
+        >
+          <!-- [ngClass]="{ taller: setForm.value.painScore !== null }" -->
+          <!-- {{ set | json }} -->
+          <mat-grid-list cols="12" rowHeight="79px" [formGroup]="setForm">
+            <mat-grid-tile colspan="2"> {{ 1 + i }}</mat-grid-tile>
+            <mat-grid-tile colspan="4">
+              <mat-form-field appearance="outline">
+                <input
+                  matInput
+                  max="9999"
+                  type="number"
+                  formControlName="weight"
+                  name="weight"
+                />
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="4">
+              <mat-form-field appearance="outline">
+                <ng-container [ngSwitch]="exerciseType()">
+                  <input
+                    *ngSwitchCase="'reps'"
+                    matInput
+                    type="number"
+                    max="999"
+                    min="0"
+                    name="reps"
+                    formControlName="reps"
+                  />
+                  <input
+                    *ngSwitchCase="'time'"
+                    matInput
+                    type="number"
+                    max="999"
+                    min="0"
+                    name="time"
+                    formControlName="time"
+                  />
+                  <input
+                    *ngSwitchCase="'distance'"
+                    matInput
+                    type="number"
+                    max="999"
+                    min="0"
+                    name="distance"
+                    formControlName="distance"
+                  />
+                </ng-container> </mat-form-field
+            ></mat-grid-tile>
+            <mat-grid-tile colspan="2">
+              <button type="button" mat-icon-button (click)="removeSet(i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-grid-tile>
+            <ng-container *ngIf="showExtraInfo()">
+              <mat-grid-tile colspan="10">
+                <mat-slider min="0" max="10" step="1">
+                  <input
+                    matSliderThumb
+                    name="painScore"
+                    formControlName="painScore"
+                  />
+                </mat-slider>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="2">
+                {{ setForm.value.painScore }}
+              </mat-grid-tile>
+              <mat-grid-tile colspan="12">
                 <mat-form-field appearance="outline">
                   <input
                     matInput
-                    max="9999"
-                    type="number"
-                    formControlName="weight"
-                    name="weight"
+                    type="textarea"
+                    name="note"
+                    formControlName="note"
+                    placeholder="note for set {{ i + 1 }}"
+                    maxlength="300"
                   />
+                  <!-- TODO: add maxlength validator for backend if possible-->
                 </mat-form-field>
               </mat-grid-tile>
-              <mat-grid-tile colspan="4">
-                <mat-form-field appearance="outline">
-                  <ng-container [ngSwitch]="exerciseType()">
-                    <input
-                      *ngSwitchCase="'reps'"
-                      matInput
-                      type="number"
-                      max="999"
-                      min="0"
-                      name="reps"
-                      formControlName="reps"
-                    />
-                    <input
-                      *ngSwitchCase="'time'"
-                      matInput
-                      type="number"
-                      max="999"
-                      min="0"
-                      name="time"
-                      formControlName="time"
-                    />
-                    <input
-                      *ngSwitchCase="'distance'"
-                      matInput
-                      type="number"
-                      max="999"
-                      min="0"
-                      name="distance"
-                      formControlName="distance"
-                    />
-                  </ng-container> </mat-form-field
-              ></mat-grid-tile>
-              <mat-grid-tile colspan="2">
-                <button type="button" mat-icon-button (click)="removeSet(i)">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </mat-grid-tile>
-              <ng-container *ngIf="showExtraInfo()">
-                <mat-grid-tile colspan="10">
-                  <mat-slider min="0" max="10" step="1">
-                    <input
-                      matSliderThumb
-                      name="painScore"
-                      formControlName="painScore"
-                    />
-                  </mat-slider>
-                </mat-grid-tile>
-                <mat-grid-tile colspan="2">
-                  {{ setForm.value.painScore }}
-                </mat-grid-tile>
-                <mat-grid-tile colspan="12">
-                  <mat-form-field appearance="outline">
-                    <input
-                      matInput
-                      type="textarea"
-                      name="note"
-                      formControlName="note"
-                      placeholder="note for set {{ i + 1 }}"
-                      maxlength="300"
-                    />
-                    <!-- TODO: add maxlength validator for backend if possible-->
-                  </mat-form-field>
-                </mat-grid-tile>
-              </ng-container>
-            </mat-grid-list>
-          </mat-list-item>
-        </ng-container>
-      </form>
+            </ng-container>
+          </mat-grid-list>
+        </mat-list-item>
+      </ng-container>
+    </form>
 
-      <!-- bottom row for add button -->
-      <mat-list-item class="tall">
-        <mat-grid-list cols="1">
-          <mat-grid-tile>
-            <button mat-fab color="primary" (click)="addSet()">
-              <mat-icon>add</mat-icon>
-            </button>
-          </mat-grid-tile>
-        </mat-grid-list>
-      </mat-list-item>
-    </ng-container>
+    <!-- bottom row for add button -->
+    <mat-list-item class="tall">
+      <mat-grid-list cols="1">
+        <mat-grid-tile>
+          <button mat-fab color="primary" (click)="addSet()">
+            <mat-icon>add</mat-icon>
+          </button>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </mat-list-item>
   </mat-list>
 </mat-card>
