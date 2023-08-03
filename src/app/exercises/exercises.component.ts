@@ -46,7 +46,7 @@ import {
         <mat-menu #menu>
           <a
             mat-menu-item
-            [routerLink]="['/exercises', 'history', exercise.id]"
+            [routerLink]="['/exercise', 'history', exercise.id]"
           >
             <mat-icon>history</mat-icon><span>History</span>
           </a>
@@ -102,11 +102,11 @@ export class ExercisesComponent {
   }
 
   onDelete(exerciseId: string) {
-    console.log('delete', exerciseId);
+    console.log('TODO delete', exerciseId);
   }
 
   onHide(exerciseId: string) {
-    console.log('hide', exerciseId);
+    console.log('TODO hide', exerciseId);
   }
 
   private async _getExercisesAndSetToExercises() {

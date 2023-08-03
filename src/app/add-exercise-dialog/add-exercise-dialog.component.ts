@@ -73,14 +73,6 @@ import { DuplicateExerciseNameValidator } from '../exercises/duplicate-exercise-
           >time
           <mat-icon matChipTrailingIcon>fitness_center</mat-icon>
         </mat-chip-option>
-        <mat-chip-option value="score"
-          >score
-          <mat-icon matChipTrailingIcon>fitness_center</mat-icon>
-        </mat-chip-option>
-        <mat-chip-option value="note"
-          >note
-          <mat-icon matChipTrailingIcon>fitness_center</mat-icon>
-        </mat-chip-option>
       </mat-chip-listbox>
       <!-- TODO change logo for each type -->
       <!-- TODO add description to explain each type -->
