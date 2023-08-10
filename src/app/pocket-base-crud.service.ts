@@ -45,7 +45,7 @@ export class PocketBaseCrudService {
       });
   }
 
-  getSessionsWithGroupOfSetsAndExercise(sessionId: string) {
+  getOneSessionWithGroupOfSetsAndExercise(sessionId: string) {
     console.log('CALL getSessionsWithGroupOfSetsAndExercise');
     return this.pbInstanceService.pb.collection('sessions').getOne<
       Session<{

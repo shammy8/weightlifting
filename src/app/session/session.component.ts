@@ -183,7 +183,7 @@ export class SessionComponent {
    */
   @Input() set sessionIdParam(id: string) {
     this._pbService
-      .getSessionsWithGroupOfSetsAndExercise(id)
+      .getOneSessionWithGroupOfSetsAndExercise(id)
       .then((session) => this.session.set(session));
   }
 
@@ -202,7 +202,7 @@ export class SessionComponent {
     // TODO handle error
     await this._pbService.updateSets(this.groupOfSetSelected().id, sets);
     this._pbService
-      .getSessionsWithGroupOfSetsAndExercise(this.session().id)
+      .getOneSessionWithGroupOfSetsAndExercise(this.session().id)
       .then((session) => this.session.set(session));
   }
 
@@ -215,7 +215,7 @@ export class SessionComponent {
       orderOfNewGroupOfSet,
     );
     const updatedSession =
-      await this._pbService.getSessionsWithGroupOfSetsAndExercise(
+      await this._pbService.getOneSessionWithGroupOfSetsAndExercise(
         this.session().id,
       );
     this.session.set(updatedSession);
@@ -228,7 +228,7 @@ export class SessionComponent {
   async deleteGroupOfSets(groupOfSetId: string) {
     await this._pbService.deleteGroupOfSets(groupOfSetId);
     const updatedSession =
-      await this._pbService.getSessionsWithGroupOfSetsAndExercise(
+      await this._pbService.getOneSessionWithGroupOfSetsAndExercise(
         this.session().id,
       );
     this.session.set(updatedSession);
