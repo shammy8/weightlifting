@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Injectable, inject } from '@angular/core';
 
+import { DateTime } from 'luxon';
+
 import { Exercise, GroupOfSet, Session, Set } from './models/models';
 import { NewExercise } from './add-exercise-dialog/add-exercise-dialog.component';
 import { PocketBaseInstanceService } from './pocket-base-instance.service';
@@ -23,6 +25,18 @@ export class PocketBaseCrudService {
       .getList<Session>(1, 20, {
         filter: `userId = "${this._authService.userRecord()!.id}"`,
         // changing fields/expand property means the <Session> interface will need to be changed too
+      });
+  }
+
+  // Get all sessions within the month of the given date
+  getSessionsForMonth(date: DateTime) {
+    const startOfMonth = date.startOf('month').toSQLDate();
+    const endOfMonth = date.endOf('month').toSQLDate();
+    console.log('CALL getSessionsForMonth', startOfMonth, endOfMonth);
+    return this.pbInstanceService.pb
+      .collection('sessions')
+      .getList<Session>(1, 32, {
+        filter: `userId = "${this._authService.userRecord()!.id}" && date >= "${startOfMonth}" && date <= "${endOfMonth}"`,
       });
   }
 

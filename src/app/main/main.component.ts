@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { RouterLink, RouterOutlet } from '@angular/router';
+
+import { MatButtonModule } from '@angular/material/button';
 
 import { SessionSelectCalendarComponent } from '../session-select-calendar/session-select-calendar.component';
 
@@ -6,9 +9,10 @@ import { SessionSelectCalendarComponent } from '../session-select-calendar/sessi
   standalone: true,
   template: `
     <app-session-select-calendar type="calendar" />
+    <a mat-raised-button routerLink="/exercises"> Exercises </a>
     <!-- <router-outlet/> -->
   `,
   styles: [],
-  imports: [/* RouterOutlet, */ SessionSelectCalendarComponent],
+  imports: [RouterLink, MatButtonModule, SessionSelectCalendarComponent],
 })
 export class MainComponent {}

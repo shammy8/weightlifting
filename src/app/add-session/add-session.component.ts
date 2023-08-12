@@ -46,8 +46,9 @@ export class AddSessionComponent {
   private readonly _pbService = inject(PocketBaseCrudService);
   private readonly _router = inject(Router);
 
-  sessionDate: WritableSignal<DateTime | null> = signal(null);
+  sessionDate: WritableSignal<DateTime> = signal(DateTime.now());
 
+  /** date query params */
   @Input({ transform: ISODateToDateTime }) set date(date: DateTime) {
     if (date.isValid) {
       this.sessionDate.set(date);

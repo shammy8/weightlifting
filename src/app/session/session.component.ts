@@ -43,6 +43,7 @@ import { ExerciseAutocompleteComponent } from '../exercise-autocomplete/exercise
   standalone: true,
   template: `
     <app-session-select-calendar
+      *ngIf="firstSessionLoaded() === true"
       type="datepicker"
       [initialDate]="sessionDate()"
     />
@@ -159,13 +160,13 @@ export class SessionComponent {
     }>
   > = signal({
     ...emptyPocketBaseRecord,
-    date: '',
+    date: DateTime.now().toSQLDate() as string,
     notes: '',
     userId: '',
     expand: { 'groupOfSets(sessionId)': [] },
   });
 
-  sessionDate: Signal<DateTime | null> = computed(() =>
+  sessionDate: Signal<DateTime> = computed(() =>
     DateTime.fromSQL(this.session().date),
   );
 
@@ -179,12 +180,21 @@ export class SessionComponent {
   );
 
   /**
+   * Set to true once first session is loaded from the api. So we don't give a null
+   * date to session-select-calendar
+   */
+  firstSessionLoaded = signal(false);
+
+  /**
    * The sessionIdParam param from the router
    */
   @Input() set sessionIdParam(id: string) {
     this._pbService
       .getOneSessionWithGroupOfSetsAndExercise(id)
-      .then((session) => this.session.set(session));
+      .then((session) => {
+        this.session.set(session);
+        this.firstSessionLoaded.set(true);
+      });
   }
 
   /**
@@ -235,8 +245,7 @@ export class SessionComponent {
   }
 
   private async _getExerciseAndSetToExercises() {
-    const exercises = await this._pbService.getExercisesForUser(
-    );
+    const exercises = await this._pbService.getExercisesForUser();
     this.exercises.set(exercises);
   }
 }
