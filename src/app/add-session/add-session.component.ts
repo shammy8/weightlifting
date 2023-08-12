@@ -71,7 +71,12 @@ export class AddSessionComponent {
       this.sessionDate()?.toSQLDate() as string,
     );
 
-    await this._pbService.addGroupOfSetToSession(newSession.id, exerciseId, 0);
+    await this._pbService.addGroupOfSetToSession(
+      newSession.id,
+      exerciseId,
+      0,
+      this.sessionDate().toSQLDate() as string,
+    );
 
     this._router.navigate(['session', newSession.id], {
       queryParams: { groupOfSetIndexParam: 0 },

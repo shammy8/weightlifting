@@ -1,3 +1,5 @@
+import { DateTime } from "luxon";
+
 /**
  * TODO not used yet
  */
@@ -20,6 +22,7 @@ export interface GroupOfSet<T = object> extends PocketBaseRecord<T> {
   exerciseId: string;
   order: number;
   sessionId: string;
+  sessionDate: string; // can't change after creation, should be the same as sessionId's date
   sets: Set[];
 }
 
@@ -52,6 +55,7 @@ export interface Exercise<T = object> extends PocketBaseRecord<T> {
 
 // TODO: is this better as enum and a Map
 // TODO: add height?? Or does it not really matter reps,time, distance are all the same?
+// best to keep this type to show different icons for different exercises
 export type ExerciseType = 'reps' | 'time' | 'distance';
 
 // There is a class called Record in pocket base but doesn't allow you to configure the expand
@@ -94,5 +98,6 @@ export const emptyGroupOfSet: GroupOfSet<{ exerciseId: Exercise }> = {
   exerciseId: '',
   sessionId: '',
   sets: [],
+  sessionDate: DateTime.now().toSQLDate() as string,
   expand: { exerciseId: { ...emptyExercise } },
 };

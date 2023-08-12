@@ -155,6 +155,8 @@ export class GroupOfSetComponent implements OnChanges, OnDestroy {
       .pipe(
         startWith(this.form.value),
         // debounceTime(500), // don't think we need debounceTime because we are updating on blur
+        // actually we can have it because user can add and delete sets. But if we include it, it will
+        // call update when user changes group of set quickly.
         distinctUntilChanged(this._isPrevAndCurrFormValuesTheSame),
         takeUntil(this._destroy$),
       )

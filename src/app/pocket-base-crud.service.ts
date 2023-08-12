@@ -36,7 +36,9 @@ export class PocketBaseCrudService {
     return this.pbInstanceService.pb
       .collection('sessions')
       .getList<Session>(1, 32, {
-        filter: `userId = "${this._authService.userRecord()!.id}" && date >= "${startOfMonth}" && date <= "${endOfMonth}"`,
+        filter: `userId = "${
+          this._authService.userRecord()!.id
+        }" && date >= "${startOfMonth}" && date <= "${endOfMonth}"`,
       });
   }
 
@@ -94,12 +96,13 @@ export class PocketBaseCrudService {
     return this.pbInstanceService.pb.collection('exercises').delete(exerciseId);
   }
 
-  addGroupOfSetToSession(sessionId: string, exerciseId: string, order: number) {
+  addGroupOfSetToSession(sessionId: string, exerciseId: string, order: number, sessionDate: string) {
     console.log('CALL addGroupOfSetToSession');
     return this.pbInstanceService.pb.collection('groupOfSets').create({
       sessionId,
       exerciseId,
       order,
+      sessionDate,
       sets: [{ reps: null, time: null, weight: null, distance: null }],
     });
   }
@@ -116,5 +119,14 @@ export class PocketBaseCrudService {
     return this.pbInstanceService.pb
       .collection('groupOfSets')
       .update(groupOfSetId, { sets });
+  }
+
+  getExerciseHistory(exerciseId: string) {
+    console.log('CALL getExerciseHistory');
+    return this.pbInstanceService.pb
+      .collection('groupOfSets')
+      .getFullList<GroupOfSet>({
+        filter: `exerciseId = "${exerciseId}"`,
+      });
   }
 }

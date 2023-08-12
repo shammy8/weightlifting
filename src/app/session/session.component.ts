@@ -223,6 +223,7 @@ export class SessionComponent {
       this.session().id,
       exerciseId,
       orderOfNewGroupOfSet,
+      this.sessionDate().toSQLDate() as string,
     );
     const updatedSession =
       await this._pbService.getOneSessionWithGroupOfSetsAndExercise(
