@@ -154,7 +154,7 @@ export class GroupOfSetComponent implements OnChanges, OnDestroy {
     this.form.valueChanges
       .pipe(
         startWith(this.form.value),
-        debounceTime(500),
+        // debounceTime(500), // don't think we need debounceTime because we are updating on blur
         distinctUntilChanged(this._isPrevAndCurrFormValuesTheSame),
         takeUntil(this._destroy$),
       )
