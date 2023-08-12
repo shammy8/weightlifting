@@ -40,7 +40,6 @@ import {
 import { Exercise, GroupOfSet, Set, emptyGroupOfSet } from '../models/models';
 import { SetComponent } from '../set/set.component';
 
-// TODO clean up file
 @Component({
   selector: 'app-group-of-set',
   standalone: true,
@@ -74,6 +73,8 @@ export class GroupOfSetComponent implements OnChanges, OnDestroy {
 
   showExtraInfo = signal(false);
 
+  skipFirstEmitOfThisGroupOfSet = signal(true);
+
   form = this._createForm();
 
   private readonly _destroy$ = new Subject<void>();
@@ -88,6 +89,7 @@ export class GroupOfSetComponent implements OnChanges, OnDestroy {
       changes['groupOfSet']?.previousValue?.id !==
       changes['groupOfSet']?.currentValue?.id
     ) {
+      this.skipFirstEmitOfThisGroupOfSet.set(true);
       this.groupOfSetSignal.set(changes['groupOfSet'].currentValue);
       this.form = this._createForm();
       this._populateForm(changes['groupOfSet'].currentValue.sets);
@@ -157,7 +159,10 @@ export class GroupOfSetComponent implements OnChanges, OnDestroy {
         takeUntil(this._destroy$),
       )
       .subscribe((formValue) => {
-        this.updateSets.emit(formValue.sets as Set[]);
+        if (this.skipFirstEmitOfThisGroupOfSet() === false) {
+          this.updateSets.emit(formValue.sets as Set[]);
+        }
+        this.skipFirstEmitOfThisGroupOfSet.set(false);
       });
   }
 

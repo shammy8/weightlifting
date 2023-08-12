@@ -50,6 +50,7 @@ import { Subject, takeUntil } from 'rxjs';
 
     <ng-container *ngIf="type === 'datepicker'">
       <mat-form-field>
+        <!-- TODO: changing input does not work for dates not in current shown month  -->
         <input
           matInput
           [matDatepicker]="picker"
