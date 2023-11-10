@@ -74,10 +74,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "weightlifting:build:production"
+              "buildTarget": "weightlifting:build:production"
             },
             "development": {
-              "browserTarget": "weightlifting:build:development"
+              "buildTarget": "weightlifting:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -85,7 +85,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "weightlifting:build"
+            "buildTarget": "weightlifting:build"
           }
         },
         "test": {
