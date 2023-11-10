@@ -36,9 +36,12 @@ import { Exercise } from '../models/models';
         <ng-template ng-header-tmp>
           <span (click)="onAddNewExercise()">Add a new exercise</span>
         </ng-template>
-        <ng-option *ngFor="let exercise of exercises" [value]="exercise.id">
+        <!-- TODO track? -->
+        @for (exercise of exercises; track exercise.id) {
+        <ng-option [value]="exercise.id">
           {{ exercise.name }}
         </ng-option>
+        }
       </ng-select>
       <button type="submit" mat-icon-button><mat-icon>add</mat-icon></button>
     </form>

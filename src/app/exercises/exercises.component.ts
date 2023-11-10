@@ -31,7 +31,9 @@ import {
   template: `
     <!-- TODO message for when there are no exercises, when there is an error -->
     <mat-list>
-      <mat-list-item *ngFor="let exercise of exercises()">
+      <!-- TODO is track correct? -->
+      @for (exercise of exercises(); track exercise.id) {
+      <mat-list-item>
         <!-- TODO customise icon for exercise type -->
         <mat-icon matListItemIcon>home</mat-icon>
 
@@ -44,24 +46,20 @@ import {
           </button>
         </span>
         <mat-menu #menu>
-          <a
-            mat-menu-item
-            [routerLink]="['/exercise', 'history', exercise.id]"
-          >
+          <a mat-menu-item [routerLink]="['/exercise', 'history', exercise.id]">
             <mat-icon>history</mat-icon><span>History</span>
           </a>
-          <button
-            mat-menu-item
-            *ngIf="!exercise.hidden"
-            (click)="onHide(exercise.id)"
-          >
+          @if (!exercise.hidden) {
+          <button mat-menu-item (click)="onHide(exercise.id)">
             <mat-icon>visibility_off</mat-icon><span>Hide</span>
           </button>
+          }
           <button mat-menu-item (click)="onDelete(exercise.id)">
             <mat-icon>delete</mat-icon><span>Delete</span>
           </button>
         </mat-menu>
       </mat-list-item>
+      }
     </mat-list>
     <button mat-fab (click)="openAddExerciseDialog()">
       <mat-icon>add</mat-icon>

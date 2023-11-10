@@ -10,7 +10,7 @@ import {
   SimpleChanges,
   WritableSignal,
 } from '@angular/core';
-import { NgClass, NgFor, NgIf, NgSwitch, NgSwitchCase } from '@angular/common';
+import { NgClass } from '@angular/common';
 import {
   FormArray,
   FormControl,
@@ -44,10 +44,6 @@ import { SetComponent } from '../set/set.component';
   selector: 'app-group-of-set',
   standalone: true,
   imports: [
-    NgIf,
-    NgFor,
-    NgSwitch,
-    NgSwitchCase,
     NgClass,
     ReactiveFormsModule,
     RouterLink,

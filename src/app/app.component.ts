@@ -1,4 +1,3 @@
-import { NgIf } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 
@@ -13,7 +12,6 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
   selector: 'app-root',
   standalone: true,
   imports: [
-    NgIf,
     RouterLink,
     RouterOutlet,
     MatButtonModule,
@@ -32,13 +30,11 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
         <span routerLink="">WL</span>
       </a>
 
-      <button
-        *ngIf="authService.isLoggedIn()"
-        mat-icon-button
-        (click)="logoff()"
-      >
+      @if (authService.isLoggedIn()) {
+      <button mat-icon-button (click)="logoff()">
         <mat-icon>logout</mat-icon>
       </button>
+      }
     </mat-toolbar>
 
     <router-outlet></router-outlet>

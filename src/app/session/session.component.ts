@@ -9,13 +9,6 @@ import {
   numberAttribute,
   signal,
 } from '@angular/core';
-import {
-  NgFor,
-  NgIf,
-  NgSwitch,
-  NgSwitchCase,
-  NgSwitchDefault,
-} from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 import { MatIconModule } from '@angular/material/icon';
@@ -42,44 +35,44 @@ import { ExerciseAutocompleteComponent } from '../exercise-autocomplete/exercise
   selector: 'app-session',
   standalone: true,
   template: `
+    @if (firstSessionLoaded() === true) {
     <app-session-select-calendar
-      *ngIf="firstSessionLoaded() === true"
       type="datepicker"
       [initialDate]="sessionDate()"
     />
+    }
 
     <div class="session">
       <!-- PB returns notes wrapped in <p> since it is a rich editor field -->
       <!-- TODO should I change this? -->
-      <p *ngIf="session().notes as notes" [innerHTML]="notes" class="notes"></p>
+      @if (session().notes; as notes) {
+      <p [innerHTML]="notes" class="notes"></p>
+      }
 
       <mat-nav-list>
+        <!-- TODO is track correct? -->
+        @for ( groupOfSet of session().expand['groupOfSets(sessionId)']; let i =
+        $index ; track groupOfSet.id) {
         <a
           mat-list-item
-          *ngFor="
-            let groupOfSet of session().expand['groupOfSets(sessionId)'];
-            let i = index
-          "
           routerLinkActive
           #routerLinkActive="routerLinkActive"
           [routerLink]="[]"
           [queryParams]="{ groupOfSetIndexParam: i }"
           [activated]="routerLinkActive.isActive"
         >
-          <mat-icon
-            matListItemIcon
-            [ngSwitch]="groupOfSet.expand.exerciseId.type"
-          >
+          <mat-icon matListItemIcon>
+            @switch (groupOfSet.expand.exerciseId.type) {
             <!-- TODO these icons check how to get more material icons  -->
-            <ng-container *ngSwitchCase="'reps'">fitness_center</ng-container>
-            <ng-container *ngSwitchCase="'distance'">send</ng-container>
-            <ng-container *ngSwitchCase="'score'">looks_one</ng-container>
-            <ng-container matListItemIcon *ngSwitchCase="'time'"
-              >timer</ng-container
-            >
-            <ng-container matListItemIcon *ngSwitchCaseDefault
-              >question_mark</ng-container
-            >
+            @case ('reps') { fitness_center } @case ('distance') { send }
+            <!-- @case('score') { looks_one } TODO do we need this?-->
+            @case ('time') {
+            <!-- TODO what should below be?  -->
+            <ng-container matListItemIcon>timer</ng-container>
+            } @default {
+            <!-- TODO what should below be?  -->
+            <ng-container matListItemIcon>question_mark</ng-container>
+            } }
           </mat-icon>
 
           <span matListItemTitle>{{ groupOfSet.expand.exerciseId.name }}</span>
@@ -102,6 +95,7 @@ import { ExerciseAutocompleteComponent } from '../exercise-autocomplete/exercise
             </button>
           </mat-menu>
         </a>
+        }
       </mat-nav-list>
 
       <app-exercise-autocomplete
@@ -109,11 +103,12 @@ import { ExerciseAutocompleteComponent } from '../exercise-autocomplete/exercise
         (exerciseIdSelected)="addGroupOfSetToSession($event)"
       />
 
+      @if (groupOfSetSelected()) {
       <app-group-of-set
-        *ngIf="groupOfSetSelected()"
         [groupOfSet]="groupOfSetSelected()!"
         (updateSets)="updateSets($event)"
       />
+      }
     </div>
   `,
   styles: [
@@ -130,11 +125,6 @@ import { ExerciseAutocompleteComponent } from '../exercise-autocomplete/exercise
     `,
   ],
   imports: [
-    NgFor,
-    NgIf,
-    NgSwitch,
-    NgSwitchCase,
-    NgSwitchDefault,
     RouterLink,
     RouterLinkActive,
     MatListModule,

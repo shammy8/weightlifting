@@ -8,7 +8,6 @@ import {
   ViewEncapsulation,
   inject,
 } from '@angular/core';
-import { NgIf } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -32,7 +31,6 @@ import { Subject, takeUntil } from 'rxjs';
   selector: 'app-session-select-calendar',
   standalone: true,
   imports: [
-    NgIf,
     MatDatepickerModule,
     MatLuxonDateModule,
     MatFormFieldModule,
@@ -40,33 +38,31 @@ import { Subject, takeUntil } from 'rxjs';
   ],
   encapsulation: ViewEncapsulation.None,
   template: `
-    <ng-container *ngIf="type === 'calendar'">
-      <mat-calendar
-        [dateClass]="dateClassFn"
-        (selectedChange)="dateSelected($event)"
-        [selected]="initialDate"
+    @if (type === 'calendar') {
+    <mat-calendar
+      [dateClass]="dateClassFn"
+      (selectedChange)="dateSelected($event)"
+      [selected]="initialDate"
+    />
+    } @else if (type === 'datepicker') {
+    <mat-form-field>
+      <!-- TODO: changing input does not work for dates not in current shown month  -->
+      <input
+        matInput
+        [matDatepicker]="picker"
+        [value]="initialDate"
+        (dateChange)="dateSelected($event.value)"
+        [min]="minDate"
       />
-    </ng-container>
-
-    <ng-container *ngIf="type === 'datepicker'">
-      <mat-form-field>
-        <!-- TODO: changing input does not work for dates not in current shown month  -->
-        <input
-          matInput
-          [matDatepicker]="picker"
-          [value]="initialDate"
-          (dateChange)="dateSelected($event.value)"
-          [min]="minDate"
-        />
-        <mat-datepicker-toggle matIconSuffix [for]="picker" />
-        <mat-datepicker
-          #picker
-          [dateClass]="dateClassFn"
-          (opened)="openDatepicker(picker)"
-          (closed)="datepickerClosedAndComponentDestroy$.next()"
-        />
-      </mat-form-field>
-    </ng-container>
+      <mat-datepicker-toggle matIconSuffix [for]="picker" />
+      <mat-datepicker
+        #picker
+        [dateClass]="dateClassFn"
+        (opened)="openDatepicker(picker)"
+        (closed)="datepickerClosedAndComponentDestroy$.next()"
+      />
+    </mat-form-field>
+    }
   `,
   styles: [
     `

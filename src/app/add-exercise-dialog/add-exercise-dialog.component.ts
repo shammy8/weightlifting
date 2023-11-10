@@ -41,12 +41,11 @@ import { DuplicateExerciseNameValidator } from '../exercises/duplicate-exercise-
           maxlength="99"
           [appDuplicateExerciseNameValidator]="dialogData.exercises"
         />
-        <mat-error *ngIf="nameControl.errors?.['required']"
-          >Exercise name is required</mat-error
-        >
-        <mat-error *ngIf="nameControl.errors?.['duplicateExerciseName']"
-          >There is already an exercise with this name</mat-error
-        >
+        @if (nameControl.errors?.['required']) {
+        <mat-error>Exercise name is required</mat-error>
+        } @if (nameControl.errors?.['duplicateExerciseName']) {
+        <mat-error>There is already an exercise with this name</mat-error>
+        }
         <!-- TODO the mat-error font-size is wrong for some reason -->
       </mat-form-field>
 
